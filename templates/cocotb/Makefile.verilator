@@ -1,0 +1,119 @@
+# =============================================================================
+# Modele de Makefile cocotb 2.x pour Verilog — simulateur Verilator
+# -----------------------------------------------------------------------------
+# Usage : copier ce fichier dans le repertoire du testbench, le renommer
+#         `Makefile`, puis adapter les variables marquees TODO.
+#
+#   cd <tb_dir>
+#   make               # verilator --cc puis make -C sim_build -f Vtop.mk
+#   make clean         # supprime sim_build/ et results.xml
+#   make help          # liste des cibles et des variables reelles de cocotb
+#
+# Verifie contre cocotb 2.0.1 :
+#   cocotb_tools/makefiles/Makefile.sim            (aide, cibles, variables)
+#   cocotb_tools/makefiles/Makefile.inc            (SIM_BUILD, results, clean)
+#   cocotb_tools/makefiles/simulators/Makefile.verilator
+#   cocotb_tools/makefiles/Makefile.deprecations   (avertissements cocotb 2.x)
+#
+# ATTENTION — noms de variables : il n'existe AUCUNE variable `VERILATOR_ARGS`
+# dans cocotb 2.0.1 (verifie par recherche dans cocotb_tools/ et cocotb/). Les
+# seules variables VERILATOR_* lues par cocotb sont :
+#   VERILATOR_BIN_DIR   : dossier contenant le binaire verilator ;
+#   VERILATOR_SIM_DEBUG : =1 -> compilation de debogage cote C++ ;
+#   VERILATOR_TRACE     : =1 -> traces, mais DEPRECIE (avertissement de
+#                         Makefile.deprecations). Voir la section traces plus bas.
+# Les options Verilator passent donc par COMPILE_ARGS (compilation), SIM_ARGS
+# (execution du binaire Vtop) et EXTRA_ARGS (les deux), variables cocotb
+# generiques et documentees.
+#
+# Autres points specifiques (lus dans Makefile.verilator de cocotb 2.0.1) :
+#   * Verilator ne supporte que Verilog/SystemVerilog : des VHDL_SOURCES
+#     provoquent le message "Skipping simulation as only Verilog is supported" ;
+#   * cocotb ajoute lui-meme a COMPILE_ARGS : --timescale, --vpi,
+#     --public-flat-rw, --prefix Vtop, -o Vtop et l'edition de liens de sa
+#     bibliotheque VPI ; ne jamais ecraser COMPILE_ARGS, toujours faire `+=` ;
+#   * cocotb exige Verilator >= 5.036 (VLT_MIN) et s'arrete a l'elaboration si
+#     la version detectee est plus ancienne ;
+#   * BUILD_ARGS est transmis au make du modele C++ genere (Vtop.mk) : utile
+#     pour OPT_FAST, OPT_SLOW, OPT_GLOBAL, VM_PARALLEL_BUILDS ;
+#   * les anciennes variables MODULE / TOPLEVEL sont depreciees par cocotb 2.x :
+#     utiliser COCOTB_TEST_MODULES / COCOTB_TOPLEVEL.
+#
+# Regle de redaction : JAMAIS de commentaire `#` en fin de ligne d'affectation
+# (GNU make conserve les espaces qui precedent le `#` dans la valeur, ce qui
+# coupe silencieusement les chemins). Les commentaires vont sur leur propre ligne.
+#
+# Etat de verification : ce modele n'a PAS pu etre execute sur la machine de
+# redaction (Verilator n'y est pas installe) ; `make` s'arrete d'ailleurs sur
+# l'erreur de version de cocotb. Seuls les noms et les roles des variables
+# ci-dessus, lus dans cocotb 2.0.1, sont garantis. Le modele pour Icarus
+# (Makefile.icarus) et l'exemple VHDL examples/03-fifo ont ete reellement
+# executes.
+# =============================================================================
+
+# --- simulateur et langage ---------------------------------------------------
+SIM := verilator
+TOPLEVEL_LANG := verilog
+
+# --- haut de hierarchie et module de tests (TODO : adapter) ------------------
+# TODO nom du module Verilog top-level
+COCOTB_TOPLEVEL := mon_top
+# TODO fichier Python des tests, sans l'extension .py
+COCOTB_TEST_MODULES := test_mon_top
+
+# --- sources -----------------------------------------------------------------
+# TODO liste des fichiers Verilog/SystemVerilog
+VERILOG_SOURCES := $(CURDIR)/mon_top.v
+
+# Repertoires de fichiers inclus : traduits en +incdir+ par cocotb.
+# VERILOG_INCLUDE_DIRS := $(CURDIR)/include
+
+# --- options de compilation Verilator (COMPILE_ARGS) -------------------------
+# Toujours `+=` : cocotb ajoute ses propres options (--vpi, --timescale, ...).
+# Avertissements non bloquants (Verilator refuse certains codes du DUT) :
+COMPILE_ARGS += -Wno-fatal
+# Delais (#10, wait, ...) dans le DUT : necessite le planificateur de temps.
+# COMPILE_ARGS += --timing
+# Defines :
+# COMPILE_ARGS += +define+FOO=1
+
+# --- execution du binaire genere (SIM_ARGS) ----------------------------------
+# SIM_ARGS += +verilator+seed+1
+
+# --- options communes compilation + execution (EXTRA_ARGS) -------------------
+# EXTRA_ARGS += -I$(CURDIR)/include
+
+# --- compilation du modele C++ genere (BUILD_ARGS -> make -f Vtop.mk) --------
+# BUILD_ARGS += OPT_FAST=-O2 OPT_SLOW=-O2 OPT_GLOBAL=-O2
+
+# --- echelle de temps par defaut --------------------------------------------
+COCOTB_HDL_TIMEUNIT ?= 1ns
+COCOTB_HDL_TIMEPRECISION ?= 1ps
+
+# --- traces d'ondes (VCD/FST) ------------------------------------------------
+# Deux voies equivalentes :
+#   a) voie explicite recommandee ci-dessous (`make TRACES=1`) ;
+#   b) VERILATOR_TRACE=1, que cocotb 2.0.1 lit encore mais en emettant un
+#      avertissement de depreciation ("VERILATOR_TRACE is deprecated").
+# La voie explicite ajoute exactement ce que cocotb ajoute pour VERILATOR_TRACE=1.
+TRACES ?= 0
+ifeq ($(TRACES),1)
+  COMPILE_ARGS += --trace --trace-structs
+  SIM_ARGS += --trace
+endif
+
+# --- debogage du code C++ genere --------------------------------------------
+# `make VERILATOR_SIM_DEBUG=1` : cocotb ajoute --debug et -Og/-Og/-Og.
+# `make debug` : relance cocotb sous gdb (cible fournie par cocotb).
+
+# --- variables diverses ------------------------------------------------------
+# ici SIM_BUILD sert de -Mdir pour verilator et contient le Vtop.mk genere
+SIM_BUILD ?= sim_build
+# rapport JUnit XML ecrit par cocotb
+COCOTB_RESULTS_FILE ?= results.xml
+# CUSTOM_COMPILE_DEPS / CUSTOM_SIM_DEPS : dependances Make supplementaires
+
+# --- inclusion de la mecanique cocotb ----------------------------------------
+# Makefile.sim choisit Makefile.$(SIM) et fait echouer le make si results.xml
+# contient un test en echec.
+include $(shell cocotb-config --makefiles)/Makefile.sim

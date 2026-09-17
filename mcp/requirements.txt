@@ -1,0 +1,9 @@
+# Serveur MCP Vivado/Vitis — dependances
+#
+# Verifie avec fastmcp 4.0.4 (qui embarque mcp 2.2.0) sur Python 3.11 et 3.12.
+# fastmcp 2.3+ fournit l'API utilisee ici (FastMCP, @mcp.tool, Client).
+fastmcp>=2.3,<5
+
+# Les tests (facultatifs) :
+#   pip install pytest
+pytest>=8,<10

@@ -1,0 +1,24 @@
+# =============================================================================
+# xsim_sources.prj — fichier de projet du simulateur Vivado (XSim)
+#
+# Syntaxe officielle (UG900, "Project File (.prj) Syntax") :
+#     verilog  <work_library> <fichiers...>
+#     vhdl     <work_library> <fichier>          <- VHDL-93
+#     vhdl2008 <work_library> <fichier>          <- VHDL-2008
+#     sv       <work_library> <fichier>
+#     ... une seule source VHDL par ligne ...
+#
+# Utilisation :
+#     xvhdl -prj xsim_sources.prj                                # analyse
+#     xelab -prj xsim_sources.prj work.tb_word_parity_counter -s tb_sim
+#     xsim tb_sim -R
+#
+# Les chemins sont relatifs au repertoire depuis lequel la commande est
+# lancee : ce fichier doit donc etre utilise depuis examples/04-.../tb/.
+#
+# Note : les deux sources sont aussi valides en VHDL-93 (verifie avec GHDL
+# -a --std=93). Il suffit de remplacer vhdl2008 par vhdl si vous ciblez du
+# VHDL-93 pur.
+# =============================================================================
+vhdl2008 work ../rtl/word_parity_counter.vhd
+vhdl2008 work tb_word_parity_counter.vhd

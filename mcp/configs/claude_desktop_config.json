@@ -1,0 +1,19 @@
+{
+  "_commentaire": "A placer dans ~/.config/Claude/claude_desktop_config.json (Linux) ou %APPDATA%/Claude/claude_desktop_config.json (Windows), puis redemarrer Claude Desktop.",
+  "mcpServers": {
+    "vivado-vitis": {
+      "command": "/chemin/vers/venv/bin/python",
+      "args": [
+        "-m",
+        "vivado_mcp",
+        "--workspace",
+        "/home/utilisateur/mon_projet_fpga"
+      ],
+      "env": {
+        "PYTHONPATH": "/chemin/vers/LLM_On_Vivado_Vitis/mcp",
+        "FPGA_MCP_TOOL_ROOT": "/tools/Xilinx",
+        "FPGA_MCP_TIMEOUT": "3600"
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+# =============================================================================
+# Modele cocotb 2.x + GHDL (VHDL) - a copier dans tb/<mon_test>/Makefile
+# Verifie avec : cocotb 2.0.1 + GHDL 6.0.0 (backend mcode), VHDL-2008.
+# =============================================================================
+
+SIM ?= ghdl
+TOPLEVEL_LANG ?= vhdl
+
+# --- sources VHDL, dans l'ORDRE de compilation (dependances d'abord) ---------
+# Chemins relatifs au dossier du tb/ courant, ou $(PWD)/... pour etre sur.
+VHDL_SOURCES += $(PWD)/../../rtl/pkg_utils.vhd
+VHDL_SOURCES += $(PWD)/../../rtl/mon_module.vhd
+
+# --- top et module(s) de test ------------------------------------------------
+# En cocotb 2.x, COCOTB_TOPLEVEL remplace TOPLEVEL et COCOTB_TEST_MODULES
+# remplace MODULE (l'ancien nom declenche un avertissement de depreciation).
+COCOTB_TOPLEVEL = mon_module
+COCOTB_TEST_MODULES = test_mon_module
+
+# --- VHDL-2008 : obligatoire a l'analyse ET a l'execution --------------------
+# GHDL_ARGS couvre les deux phases (analyse + run). Sans cela :
+#   "cannot find entity or configuration mon_module".
+GHDL_ARGS += --std=08
+
+# --- graine fixe : les tests doivent etre reproductibles ---------------------
+export COCOTB_RANDOM_SEED ?= 1234
+
+# --- options utiles ----------------------------------------------------------
+# make COCOTB_TESTCASE=test_nominal   -> ne lancer qu'un test
+# make                                -> tous les tests de test_mon_module.py
+#
+# TRACES D'ONDES -- piege verifie (cocotb 2.0.1 + GHDL 6.0.0) :
+#   `make WAVES=1` ne produit AUCUN fichier .ghw (le Makefile GHDL de cocotb
+#   n'ajoute jamais --wave a la ligne de commande) et cela SANS erreur.
+#   Pour obtenir une trace avec GHDL, utiliser le lanceur Python :
+#       WAVES=1 python3 run_tests.py        -> <top>.ghw (GTKWave / Surfer)
+#   `make WAVES=1` reste valable pour Questa/Riviera.
+include $(shell cocotb-config --makefiles)/Makefile.sim

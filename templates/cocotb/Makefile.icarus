@@ -1,0 +1,95 @@
+# =============================================================================
+# Modele de Makefile cocotb 2.x pour Verilog — simulateur Icarus Verilog
+# -----------------------------------------------------------------------------
+# Usage : copier ce fichier dans le repertoire du testbench, le renommer
+#         `Makefile`, puis adapter les variables marquees TODO.
+#
+#   cd <tb_dir>
+#   make            # compilation (iverilog) + simulation (vvp)
+#   make clean      # supprime sim_build/ et results.xml
+#   make help       # liste des cibles et des variables reelles de cocotb
+#
+# Verifie contre cocotb 2.0.1 :
+#   cocotb_tools/makefiles/Makefile.sim          (aide, cibles, variables)
+#   cocotb_tools/makefiles/Makefile.inc          (SIM_BUILD, results, clean)
+#   cocotb_tools/makefiles/simulators/Makefile.icarus
+# Noms de variables acceptes par ce simulateur (aucun autre n'est lu) :
+#   SIM, TOPLEVEL_LANG, VERILOG_SOURCES, VERILOG_INCLUDE_DIRS, COCOTB_TOPLEVEL,
+#   COCOTB_TEST_MODULES, COCOTB_TESTCASE, COCOTB_TEST_FILTER, COMPILE_ARGS,
+#   SIM_ARGS, EXTRA_ARGS, COCOTB_PLUSARGS, CUSTOM_COMPILE_DEPS, CUSTOM_SIM_DEPS,
+#   SIM_BUILD, COCOTB_RESULTS_FILE, COCOTB_HDL_TIMEUNIT, COCOTB_HDL_TIMEPRECISION,
+#   GUI, WAVES, ICARUS_BIN_DIR, SIM_CMD_PREFIX
+#
+# Points specifiques a Icarus (lus dans Makefile.icarus de cocotb 2.0.1) :
+#   * COMPILE_ARGS va uniquement a iverilog, SIM_ARGS uniquement a vvp,
+#     EXTRA_ARGS va aux deux ;
+#   * la compilation passe deja -g2012 dans la ligne de commande de cocotb ;
+#     l'ajouter a COMPILE_ARGS est redondant mais sans effet, et rend le besoin
+#     de Verilog-2012 explicite si quelqu'un remplace la regle de compilation ;
+#   * WAVES=1 ajoute un module de dump genere (sim_build/cocotb_iverilog_dump.v)
+#     et trace au format FST dans sim_build/$(COCOTB_TOPLEVEL).fst ;
+#     WAVES=0 passe -none a vvp (aucune trace) — c'est le defaut si WAVES est vide ;
+#   * VERILOG_INCLUDE_DIRS est traduit en -I<dir> ;
+#   * les anciennes variables MODULE / TOPLEVEL sont depreciees par cocotb 2.x :
+#     utiliser COCOTB_TEST_MODULES / COCOTB_TOPLEVEL.
+#
+# Regle de redaction : JAMAIS de commentaire `#` en fin de ligne d'affectation
+# (GNU make conserve les espaces qui precedent le `#` dans la valeur, ce qui
+# coupe silencieusement les chemins). Les commentaires vont sur leur propre ligne.
+# =============================================================================
+
+# --- simulateur et langage ---------------------------------------------------
+SIM := icarus
+TOPLEVEL_LANG := verilog
+
+# --- haut de hierarchie et module de tests (TODO : adapter) ------------------
+# TODO nom du module Verilog top-level
+COCOTB_TOPLEVEL := mon_top
+# TODO fichier Python des tests, sans l'extension .py
+COCOTB_TEST_MODULES := test_mon_top
+
+# --- sources -----------------------------------------------------------------
+# TODO liste des fichiers Verilog/SystemVerilog du DUT (et du testbench HDL s'il
+# y en a un). Chemin absolu pour que `make -C` fonctionne depuis n'importe ou.
+VERILOG_SOURCES := $(CURDIR)/mon_top.v
+
+# Repertoires de fichiers inclus (`include`) : traduits en -I par cocotb.
+# VERILOG_INCLUDE_DIRS := $(CURDIR)/include
+
+# --- options de compilation (iverilog uniquement) ----------------------------
+# -g2012 : Verilog-2012 (SystemVerilog restreint) ; accepte par Icarus >= 11.
+COMPILE_ARGS += -g2012
+# Defines eventuels :
+# COMPILE_ARGS += -DFOO=1
+# Options d'avertissement :
+# COMPILE_ARGS += -Wall
+
+# --- options d'execution (vvp uniquement) ------------------------------------
+# SIM_ARGS += -vcd
+# Extensions `.vpi` supplementaires : elles vont aux deux phases
+# EXTRA_ARGS += -m mon_module
+
+# --- plusargs transmis au testbench HDL --------------------------------------
+# COCOTB_PLUSARGS := +mon_plusarg=1
+
+# --- echelle de temps par defaut (utilisee si les sources n'en donnent pas) --
+COCOTB_HDL_TIMEUNIT ?= 1ns
+COCOTB_HDL_TIMEPRECISION ?= 1ps
+
+# --- traces d'ondes ----------------------------------------------------------
+# `make WAVES=1` active le dump FST (voir les points specifiques ci-dessus).
+WAVES ?= 0
+
+# --- variables diverses ------------------------------------------------------
+# repertoire de travail du simulateur
+SIM_BUILD ?= sim_build
+# rapport JUnit XML ecrit par cocotb (lu par cocotb_tools.check_results)
+COCOTB_RESULTS_FILE ?= results.xml
+# GUI : non supporte par Icarus (accepte par le makefile commun, sans effet)
+# SIM_CMD_PREFIX : prefixe de la commande de simulation (ex. valgrind)
+# CUSTOM_COMPILE_DEPS / CUSTOM_SIM_DEPS : dependances Make supplementaires
+
+# --- inclusion de la mecanique cocotb ----------------------------------------
+# Makefile.sim choisit Makefile.$(SIM), expose les cibles sim / regression /
+# clean / help et fait echouer le make si results.xml contient un echec.
+include $(shell cocotb-config --makefiles)/Makefile.sim

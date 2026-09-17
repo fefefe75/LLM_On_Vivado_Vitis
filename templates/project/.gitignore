@@ -1,0 +1,108 @@
+# =============================================================================
+#  .gitignore de projet — squelette FPGA (VHDL, simulation, Vivado, Vitis)
+#
+#  Principe : tout ce qui est GENERE ne va pas dans git.
+#  Seuls les sources ecrits a la main sont versionnes :
+#      rtl/, tb/, constraints/, scripts/, software/ (sources), sim/ (scripts),
+#      doc/, Makefile, README, CONTRIBUTING.
+#  Renforce par rapport a la racine du depot : ajoute les artefacts cocotb 2.x
+#  (sim_build, results.xml), les bibliotheques GHDL/Questa et les rapports.
+# =============================================================================
+
+# --- Vivado : projets et sorties ---------------------------------------------
+*.xpr
+*.jou
+*.log
+.Xil/
+vivado*.log
+vivado*.jou
+vivado*.str
+*.bit
+*.bin
+*.ltx
+*.xsa
+*.hwdef
+*.dcp
+*.rpt
+*.rst
+*.edif
+*.vds
+*.pb
+.project
+.srcs/
+.runs/
+.sim/
+.cache/
+.hw/
+.ip_user_files/
+.ipcache/
+.gen/
+hw_1/
+usage_statistics_webtalk*
+webtalk*.jou
+webtalk*.log
+
+# --- XSim (simulateur Vivado) ------------------------------------------------
+xsim.dir/
+xelab.pb
+*.wdb
+*.wcfg
+*.asdb
+webtalk_*.backup.jou
+
+# --- Vitis / SDK : logiciel embarque genere ----------------------------------
+*.elf
+*.map
+*.o
+*.d
+*.mk
+*.pdi
+*.ltx
+.vitis/
+workspace/
+platform/
+zynq_fsbl/
+_dbg/
+.sdk/
+Debug/
+Release/
+
+# --- simulation : artefacts (jamais versionnes) ------------------------------
+sim_build/
+results.xml
+work-obj08.cf
+work-obj93.cf
+work-obj*.cf
+work/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.vcd
+*.ghw
+*.fst
+*.wlf
+transcript
+vsim.wlf
+modelsim.ini
+wave.do
+xsim.dir/
+build/
+*.cf
+
+# --- lint / outils -----------------------------------------------------------
+build/
+.lint/
+
+# --- editeurs / OS -----------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# --- divers ------------------------------------------------------------------
+*.bak
+*.orig
+*.rej

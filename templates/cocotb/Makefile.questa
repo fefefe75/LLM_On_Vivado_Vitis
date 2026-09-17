@@ -1,0 +1,26 @@
+# =============================================================================
+# Modele cocotb 2.x + Questa/ModelSim (VHDL ou Verilog) - a copier dans tb/
+# Pour une licence ModelSim/Questa : c'est le simulateur qui remplace XSim,
+# que cocotb ne supporte PAS.
+# =============================================================================
+
+SIM ?= questa                 # SIM=modelsim pour les versions anciennes
+TOPLEVEL_LANG ?= vhdl
+
+VHDL_SOURCES += $(PWD)/../../rtl/mon_module.vhd
+# VERILOG_SOURCES += $(PWD)/../../rtl/mon_module.sv
+
+COCOTB_TOPLEVEL = mon_module
+COCOTB_TEST_MODULES = test_mon_module
+
+# --- visualisation -----------------------------------------------------------
+# make GUI=1          -> ouvre l'IHM Questa pendant la simulation
+# make WAVES=1        -> ecrit un .wlf (add wave -r /* ; run -all)
+GUI ?= 0
+VSIM_ARGS += -voptargs=+acc          # garde la visibilite de tous les signaux
+# SIM_ARGS += -do "add wave -r /* ; run -all"
+
+# --- reproductibilite --------------------------------------------------------
+export COCOTB_RANDOM_SEED ?= 1234
+
+include $(shell cocotb-config --makefiles)/Makefile.sim
