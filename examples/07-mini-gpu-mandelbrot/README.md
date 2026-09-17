@@ -111,11 +111,15 @@ Pour obtenir la courbe complète (1, 2, 4, 8, 16 voies — chaque configuration 
 cd tb && make bench          # = python3 bench_lanes.py --lanes 1 2 4 8 16
 ```
 
-> Ce balayage complet n'a pas été exécuté dans le temps imparti à cet exemple (chaque
-> configuration demande une élaboration GHDL puis une simulation complète, soit plusieurs
-> minutes à elles toutes) : les deux points ci-dessus sont les mesures réelles, le reste
-> est la commande qui les produit. Je préfère l'écrire que de remplir un tableau avec des
-> nombres non mesurés.
+> Ce balayage complet n'a pas été exécuté dans le temps imparti à cet exemple : chaque
+> configuration demande une élaboration **et** une simulation complète, et **GHDL
+> (backend mcode) simule ce design à ~500 cycles par seconde** — mesuré : l'image
+> 320×240 (572 057 cycles) a demandé environ 19 minutes de temps réel pour l'ensemble
+> du banc. Un balayage à 1 voie est donc le plus coûteux (aucun parallélisme pour
+> raccourcir la simulation elle-même). Avec un simulateur compilé (XSim, ou Verilator
+> sur une version Verilog du design) ces chiffres seraient obtenus 10 à 100 fois plus
+> vite ; avec GHDL, réduire l'image (`-w 48 -H 32 -i 32`) rend le balayage praticable.
+> Les deux points ci-dessus sont, eux, **mesurés**.
 
 ## 5. Coût matériel et fréquence (synthèse Vivado 2025.2)
 

@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 """Mesure l'acceleration reelle du mini-GPU quand on ajoute des lanes.
 
-    python3 bench_lanes.py                       # 1, 2, 4, 8, 16 lanes sur 128x96
-    python3 bench_lanes.py --lanes 1 2 4 8 16 24 -w 192 -H 144 -i 96
+    python3 bench_lanes.py                        # 1, 2, 4, 8, 16 voies sur 48x32
+    python3 bench_lanes.py --lanes 1 2 4 -w 96 -H 64 -i 48
+    python3 bench_lanes.py --lanes 8            # une seule configuration
+
+Duree : chaque point est une elaboration + une simulation complete, et GHDL (mcode)
+simule ce design a ~500 cycles/s (mesure). La configuration a 1 voie est la plus lente,
+car il n'y a aucun parallelisme pour raccourcir la simulation elle-meme.
 
 Pour chaque configuration : elaboration avec le bon nombre de lanes, simulation, puis
 lecture des compteurs materiels (o_cycles). Le gain (speedup) et l'efficacite sont
@@ -48,7 +53,20 @@ def executer(lanes: int, largeur: int, hauteur: int, max_iter: int) -> dict:
                     test_args=["--std=08", f"--workdir={HERE / 'sim_build'}",
                                f"-P{HERE / 'sim_build'}"],
                     test_dir=HERE, build_dir=HERE / "sim_build")
-        return json.loads(Path(chemin_mesures).read_text())
+
+        # Le module de mesure ecrit son JSON a la fin de la simulation. Si le fichier
+        # est vide, c'est que la simulation a ete interrompue : le dire clairement
+        # plutot que de laisser remonter un "JSONDecodeError" (erreur reellement
+        # rencontree quand une simulation est tuee en cours de route).
+        chemin = Path(chemin_mesures)
+        texte = chemin.read_text() if chemin.exists() else ""
+        if not texte.strip():
+            raise RuntimeError(
+                f"aucune mesure pour {lanes} lane(s) : la simulation s'est arretee "
+                f"avant la fin (regarder la sortie du simulateur ci-dessus, ou relancer "
+                f"cette configuration seule avec --lanes {lanes})"
+            )
+        return json.loads(texte)
     finally:
         os.environ.pop("MANDEL_BENCH_OUT", None)
         Path(chemin_mesures).unlink(missing_ok=True)
@@ -57,9 +75,9 @@ def executer(lanes: int, largeur: int, hauteur: int, max_iter: int) -> dict:
 def main() -> int:
     p = argparse.ArgumentParser(description="Acceleration du mini-GPU par nombre de lanes")
     p.add_argument("--lanes", type=int, nargs="+", default=[1, 2, 4, 8, 16])
-    p.add_argument("-w", "--largeur", type=int, default=128)
-    p.add_argument("-H", "--hauteur", type=int, default=96)
-    p.add_argument("-i", "--max-iter", type=int, default=64)
+    p.add_argument("-w", "--largeur", type=int, default=48)
+    p.add_argument("-H", "--hauteur", type=int, default=32)
+    p.add_argument("-i", "--max-iter", type=int, default=32)
     args = p.parse_args()
 
     print(f"Image {args.largeur}x{args.hauteur}, max_iter={args.max_iter}, Q{cfg.FRAC}")
