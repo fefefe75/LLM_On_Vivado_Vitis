@@ -11,3 +11,6 @@ clockInfo.txt
 *.backup.jou
 *.backup.log
 images_*/
+tight_setup_hold_pins.txt
+*.wdf
+*.wpc
