@@ -32,7 +32,7 @@ GHDL_ARGS += --std=08                 # analyse ET exécution
 include $(shell cocotb-config --makefiles)/Makefile.sim
 ```
 
-## Les trois pièges qui font échouer un test correct
+## Les pièges qui font échouer un test correct
 
 1. **Entrées posées après le reset** → tout est décalé d'un cycle. Poser les
    entrées **avant** de relâcher le reset.
@@ -45,6 +45,31 @@ include $(shell cocotb-config --makefiles)/Makefile.sim
 Autres : `--std=08` oublié à l'exécution → `cannot find entity or configuration` ;
 `vhdl_sources=` dans l'API Python → déprécié, utiliser `sources=` ; GHDL ignore
 `elab_args` → utiliser `test_args=["--std=08"]`.
+
+4. **Runner Python + GHDL : `cannot find entity or configuration <top>`** alors que le
+   build vient de réussir. Le runner exécute la simulation dans `test_dir` et
+   l'élaboration s'est faite dans `build_dir` :
+   ```python
+   runner.test(..., test_args=["--std=08", f"--workdir={build_dir}", f"-P{build_dir}"])
+   ```
+   (`--std=08` est nécessaire **aussi** à l'exécution, pas seulement à l'analyse.)
+
+## Rendre un banc utilisable : mesurer au lieu de poller
+
+Un banc qui attend chaque front d'horloge coûte ~0,6 ms de Python par cycle (mesuré :
+1 million de cycles simulés en 48 s, inexploitable). Deux remèdes :
+
+```python
+await FallingEdge(dut.i_clk)          # un seul déclencheur par cycle (au lieu de
+                                      # RisingEdge + ReadOnly) et valeurs stabilisées
+await dut.o_done.value_change         # se réveiller sur un CHANGEMENT de valeur :
+                                      # un banc de mesure passe de minutes à secondes
+```
+
+Pour lire la configuration du design, préférer des **ports de configuration**
+(`o_cfg_*`) au lieu de recopier les constantes dans le test : le test vérifie alors
+l'arithmétique du RTL, pas une valeur qu'il a lui-même posée.
+Exemple complet : `examples/07-mini-gpu-mandelbrot/`.
 
 ## Structure d'un test qui prouve quelque chose
 

@@ -36,6 +36,9 @@ Chercher d'abord le code entre crochets (`[Synth 8-36]`, `[Common 17-69]`, `[DRC
 | cocotb : `Couldn't find makefile for simulator: "xsim"` | cocotb **ne supporte pas** XSim → GHDL/Icarus/Verilator/Questa, ou testbench VHDL |
 | GHDL : `cannot find entity or configuration x` | `--std=08` absent à l'exécution, top mal nommé, ou `build_dir` ≠ `test_dir` |
 | cocotb : `RuntimeError: Attempting settings a value during the ReadOnly phase` | avancer d'un événement avant d'écrire après un `ReadOnly()` |
+| `[Synth 8-10557] cannot read from 'out' object 'x'; use 'buffer' or 'inout' instead` | le code relit un port `out` (facilité VHDL-2008) alors que **Vivado lit les sources en VHDL-93 par défaut** → signal interne + câblage concurrent du port |
+| GHDL : `bound check failure` à l'exécution (aucun nom d'opérateur dans le message) | trois causes distinctes : format Q trop juste (Q28/32 → ±8,0 et un intermédiaire atteint 8,0), `vecteur * littéral_entier` (→ `shift_left`), `unsigned + delta` signé (l'opérateur attend un NATURAL). Isoler l'expression dans un repro de 10 lignes |
+| `report_timing_summary` vide, `get_timing_paths` ne renvoie rien (`[Common 17-55] 'get_property' expects at least one object`) | aucune horloge contrainte : il manque `create_clock` dans un XDC (`docs/07-timing-closure.md`) |
 | Tcl : `missing close-brace: possible unbalanced brace in comment` | accolade littérale dans un commentaire/chaîne à l'intérieur d'un bloc `{...}` → échapper (`\{`) |
 
 ## Réflexe anti-devinette
