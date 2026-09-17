@@ -90,6 +90,23 @@ mcp/                   the MCP server (Python), client configs, its own test sui
 scripts/               check_tcl.py (validates every Tcl script), helpers
 ```
 
+## Version
+
+**v1.0** — première version considérée comme utilisable telle quelle (`git tag -l`).
+État vérifié au moment du tag :
+
+| Élément | État |
+|---|---|
+| Exemples 01 → 07 | tous exécutés ; `examples/07` (mini-GPU SIMT) vérifie en plus 6 configurations mesurées |
+| Serveur MCP | 52 tests passent (`cd mcp && python -m pytest -q`) |
+| Scripts Tcl | validés sans Vivado (`python3 scripts/check_tcl.py`) et exécutés avec Vivado 2025.2 |
+| Vivado / Vitis | flux complets réellement exécutés (synthèse → bitstream → XSA ; `vitis -s`) |
+| Tout rejouer | `bash scripts/verify_all.sh` |
+
+Ce qui n'est **pas** couvert et qui est écrit noir sur blanc dans les docs : la
+programmation JTAG (aucune carte), le flux Vitis de bout en bout sur cible Zynq, et un
+design en violation de timing.
+
 ## Verification policy of this repository
 
 Every non-obvious claim is either measured or explicitly flagged as unverified.

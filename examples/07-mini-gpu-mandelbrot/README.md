@@ -111,22 +111,40 @@ image, **13 % du temps de calcul de 16 voies est perdu** parce que des points de
 l'ensemble immobilisent leur voie pendant que d'autres sont libérées. C'est le phénomène
 central d'un GPU, ici chiffré.
 
-Pour obtenir la courbe complète (1, 2, 4, 8, 16 voies — chaque configuration est
-élaborée puis simulée, les cycles sont lus dans le compteur matériel `o_cycles`) :
+### Mise à l'échelle : ce que coûte vraiment d'ajouter des voies
 
-```bash
-cd tb && make bench          # = python3 bench_lanes.py --lanes 1 2 4 8 16
-```
+Balayage complet **mesuré** (image 48×32, 32 itérations) : chaque configuration est
+élaborée, simulée, ses cycles sont lus dans le compteur matériel `o_cycles`, et ses
+1536 pixels sont comparés au modèle Python.
 
-> Ce balayage complet n'a pas été exécuté dans le temps imparti à cet exemple : chaque
-> configuration demande une élaboration **et** une simulation complète, et **GHDL
-> (backend mcode) simule ce design à ~500 cycles par seconde** — mesuré : l'image
-> 320×240 (572 057 cycles) a demandé environ 19 minutes de temps réel pour l'ensemble
-> du banc. Un balayage à 1 voie est donc le plus coûteux (aucun parallélisme pour
-> raccourcir la simulation elle-même). Avec un simulateur compilé (XSim, ou Verilator
-> sur une version Verilog du design) ces chiffres seraient obtenus 10 à 100 fois plus
-> vite ; avec GHDL, réduire l'image (`-w 48 -H 32 -i 32`) rend le balayage praticable.
-> Les deux points ci-dessus sont, eux, **mesurés**.
+| Voies | Cycles du rendu | Cycles / pixel | Gain vs 1 voie | Efficacité parallèle |
+|---|---|---|---|---|
+| 1 | 60 977 | 39,70 | 1,00× | **92,4 %** |
+| 2 | 30 915 | 20,13 | **1,97×** | 91,2 % |
+| 4 | 15 982 | 10,41 | **3,82×** | 88,2 % |
+| 8 | 8 270 | 5,38 | **7,37×** | 85,2 % |
+| 16 | 4 895 | 3,19 | **12,46×** | 72,0 % |
+
+Ce que ce tableau enseigne, et qu'aucune formule ne remplace :
+
+- jusqu'à 8 voies le gain suit presque le nombre de voies (7,37× pour 8) ;
+- **à 16 voies il décroche** (12,46× pour 16) et l'efficacité tombe à 72 % : c'est la
+  divergence (des pixels de l'ensemble immobilisent leur voie jusqu'à 32 itérations)
+  aggravée par la petite image (1536 pixels ÷ 16 voies = 96 pixels par voie, donc la
+  fin du rendu s'exécute à quelques voies seulement) ;
+- l'efficacité est **maximale à 1 voie** (92,4 %) : par construction, aucune divergence
+  entre voies. Ajouter des voies ne donne pas « ×N » gratuitement — c'est la leçon
+  centrale d'un GPU.
+
+Reproductible en une commande : `cd tb && make bench`.
+
+> Correction d'une estimation que j'avais écrite ici : j'avais annoncé « GHDL simule ce
+> design à ~500 cycles/s, donc le balayage est long ». **C'était faux** — c'était mon
+> banc de test qui coûtait 0,6 ms de Python par cycle d'horloge. GHDL est en réalité
+> rapide (~120 000 cycles/s sur ce design : les 60 978 cycles de la configuration à
+> 1 voie se simulent en ~5 s). Le balayage complet a donc été exécuté, et la leçon
+> utile est celle-là : **mesurer l'outil, pas le supposer** — même quand on se trompe
+> soi-même (voir `skills/cocotb-testbench`, section « mesurer au lieu de poller »).
 
 ## 5. Coût matériel et fréquence (synthèse Vivado 2025.2)
 
@@ -228,6 +246,7 @@ brut. Ce que cet exemple démontre vraiment :
 | Entier signé multiplié par un littéral | `bound check failure` sur `resize(zr*zi, 64) * 2` même pour de petites valeurs (reproduit en 10 lignes) | `shift_left(zr*zi, 1)` |
 | Addition avec un entier signé | `bound check failure` sur `unsigned + v_delta` : l'opérateur numeric_std attend un **NATURAL**, un delta négatif violé le sous-type | branches explicites (`+1`, `-1`, inchangé) |
 | Un seul créneau de résultat par voie | **351 pixels sur 6144 jamais émis**, simulation bloquée, `o_done` jamais armé : la voie repartait avant la collecte et écrasait le résultat (coordonnées fausses en prime) | 2 créneaux par voie + contre-pression sur l'émission |
+| Double distribution à une même voie (`C_LANES=1`) | **1536 pixels émis pour 768 calculés** : le répartiteur balaie la même voie à chaque cycle et lui confie un second pixel alors que la voie est encore `IDLE` — le pulse de départ, étant enregistré, n'agit qu'au front suivant, et ce second pixel n'est **jamais calculé** (simulation qui ne se termine plus, gel à exactement la moitié) | demande **maintenue** par voie (`s_req`) au lieu d'un pulse, effacée dès que la voie quitte `IDLE` : la distribution devient idempotente. Ne se manifeste qu'à 1 voie (le balayage revient sur une voie déjà occupée dès 2 voies) |
 | Lire un signal juste après le front | `Attempting settings a value during the ReadOnly phase` (écrire après `ReadOnly()`), et lecture décalée d'un cycle | testbench : lire sur le front **descendant** ; init : terminer sur un front, pas sur `ReadOnly` |
 | `to_integer` sur un `std_logic` | `no overloaded function found matching "to_integer"` | fonction de conversion explicite `f_bit_vers_int` |
 | Plage de port non localement statique | `unsigned(f_bits(C_IMG_W-1)-1 downto 0)` refusé (appel de fonction dans une plage) | largeurs passées en génériques (`C_XW`, `C_YW`) |

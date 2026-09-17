@@ -18,7 +18,7 @@ def const(dut):
         return -1
 
 
-@cocotb.test(timeout_time=60, timeout_unit="ms")
+@cocotb.test(timeout_time=30, timeout_unit="ms")
 async def debug_progression(dut):
     cocotb.start_soon(Clock(dut.i_clk, 10, unit="ns").start())
     dut.i_rst.value = 1
@@ -34,10 +34,10 @@ async def debug_progression(dut):
     dut.i_start.value = 0
 
     lecture = lambda sig, nom: (int(getattr(dut, nom).value) if hasattr(dut, nom) else -1)
-    for cycle in range(1, 200001):
+    for cycle in range(1, 400001):
         await RisingEdge(dut.i_clk)
         await ReadOnly()
-        if cycle % 5000 == 0 or cycle < 12:
+        if cycle % 20000 == 0 or cycle < 5:
             try:
                 s_issued = int(dut.s_issued.value)
             except Exception:
@@ -60,4 +60,4 @@ async def debug_progression(dut):
         if int(dut.o_done.value) == 1:
             dut._log.info(f"RENDU TERMINE au cycle {cycle} (o_cycles={int(dut.o_cycles.value)})")
             return
-    dut._log.error("PAS TERMINE apres 200000 cycles")
+    dut._log.error("PAS TERMINE apres 400000 cycles")

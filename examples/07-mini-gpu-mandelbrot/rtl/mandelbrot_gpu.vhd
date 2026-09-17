@@ -101,7 +101,14 @@ architecture rtl of mandelbrot_gpu is
     type t_slots_tab is array (natural range <>) of t_resultat;
 
     -- vers les lanes
-    signal lane_start : std_logic_vector(C_LANES - 1 downto 0) := (others => '0');
+    -- s_req : demande de calcul PAR VOIE. C'est un niveau maintenu, pas une impulsion,
+    -- et c'est la correction d'un bug reel : avec C_LANES=1, le repartiteur balaie la
+    -- MEME voie a chaque cycle ; il pouvait donc lui confier un second pixel pendant
+    -- que la voie etait encore IDLE (le pulse enregistre n'agit qu'au front suivant).
+    -- Ce second pixel n'etait jamais calcule : sur 48x32, 1536 pixels emis pour 768
+    -- calcules, et la simulation ne se terminait plus. Le niveau maintenu rend la
+    -- distribution idempotente ; s_req est efface des que la voie quitte IDLE.
+    signal s_req      : std_logic_vector(C_LANES - 1 downto 0) := (others => '0');
     signal lane_cr    : t_val_tab;
     signal lane_ci    : t_val_tab;
     -- depuis les lanes
@@ -135,6 +142,7 @@ architecture rtl of mandelbrot_gpu is
 
     -- etat global
     signal s_active : std_logic := '0';
+
 
     -- Sorties LUES A L'INTERIEUR de l'architecture : on passe par des signaux
     -- internes et on cable les ports en concurrence. Lire directement un port `out`
@@ -211,7 +219,7 @@ begin
             port map (
                 i_clk     => i_clk,
                 i_rst     => i_rst,
-                i_start   => lane_start(k),
+                i_start   => s_req(k),
                 i_cr      => lane_cr(k),
                 i_ci      => lane_ci(k),
                 o_free    => lane_free(k),
@@ -229,14 +237,19 @@ begin
     begin
         if rising_edge(i_clk) then
             if i_rst = '1' then
-                lane_start  <= (others => '0');
+                s_req       <= (others => '0');
                 s_lane_sel  <= 0;
                 s_next_x    <= (others => '0');
                 s_next_y    <= (others => '0');
                 s_issued    <= (others => '0');
                 s_rendering <= '0';
             else
-                lane_start <= (others => '0');   -- impulsion de 1 cycle par defaut
+                -- une demande est consommee des que la voie n'est plus IDLE
+                for k in 0 to C_LANES - 1 loop
+                    if (s_req(k) = '1') and (lane_free(k) = '0') then
+                        s_req(k) <= '0';
+                    end if;
+                end loop;
 
                 if (i_start = '1') then
                     s_rendering <= '1';
@@ -245,14 +258,17 @@ begin
                     s_next_y    <= (others => '0');
                 end if;
 
+                -- On ne distribue que si AUCUNE demande n'est en attente pour cette
+                -- voie (s_req = 0) : c'est ce qui rend le double envoi impossible.
                 if (s_rendering = '1') and (s_issued < C_TOTAL)
+                   and (s_req(s_lane_sel) = '0')
                    and (lane_free(s_lane_sel) = '1')
                    and (s_occ(s_lane_sel) < C_SLOTS) then
                     lane_cr(s_lane_sel)    <= f_cr(s_next_x);
                     lane_ci(s_lane_sel)    <= f_ci(s_next_y);
                     px_x_saved(s_lane_sel) <= s_next_x;
                     px_y_saved(s_lane_sel) <= s_next_y;
-                    lane_start(s_lane_sel) <= '1';
+                    s_req(s_lane_sel)      <= '1';
                     s_issued               <= s_issued + 1;
 
                     -- pixel suivant : balayage ligne par ligne
