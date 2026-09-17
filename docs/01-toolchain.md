@@ -149,4 +149,13 @@ Vivado v2025.2 (64-bit)   Tool Version Limit: 2025.11   (+ XSim, xsct, Vitis v20
 GHDL 6.0.0 (mcode, JIT)   cocotb 2.0.1 (Python 3.12)     tclsh 8.6
 Pièces dispo. : xc7z020*, xc7z010*, xc7z007s*, xc7a35t* (30 variantes), xc7a100t*
 Commande absente de 2025.2 : write_hw_def  (remplacée par write_hw_platform)
+Questa Intel Starter FPGA Edition 2023.3 : installé (~/intelFPGA_lite/23.1std/questa_fse)
+  → mais licence liée à une AUTRE machine (HOSTID=10f60a3c98a8 dans ~/license.dat) :
+    « Failure to obtain a Verilog simulation license ... Invalid host »
+  → utiliser XSim ou GHDL+cocotb ; re-hoster la licence côté Intel pour l'activer
 ```
+
+**Leçon générale** : `vsim -version` (ou `vivado -version`) qui répond ne prouve pas
+que l'outil est utilisable — c'est le *checkout* de licence, au moment de lancer la
+simulation ou la synthèse, qui décide. Toujours faire tourner un cas minimal réel
+avant de bâtir un flux dessus.

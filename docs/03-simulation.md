@@ -16,6 +16,16 @@ GHDL 6.0.0, cocotb 2.0.1). Les chiffres sont réels.
 | Questa / ModelSim | les deux | licence payante | oui (`SIM=questa`) | ce que le tutoriel de cours utilise souvent |
 | NVC | VHDL | libre | oui (`SIM=nvc`) | alternative à GHDL |
 
+> ⚠️ **Questa Intel Starter FPGA Edition 2023.3 est installé sur cette machine**
+> (`~/intelFPGA_lite/23.1std/questa_fse/bin`) mais **inutilisable en l'état** : la
+> licence gratuite `~/license.dat` est liée à une autre machine
+> (`HOSTID=10f60a3c98a8`), d'où à la simulation :
+> `** Error: Failure to obtain a Verilog simulation license. Unable to checkout 'intelqsimstarter' license.`
+> → `Invalid host. (/home/felixantoine/license.dat)`. Faire **re-hoster** la licence
+> (site de licences Intel, MAC de cette machine) ou utiliser **XSim** (Vivado, licence
+> WebPACK gratuite) ou **GHDL + cocotb**. `vsim -version` fonctionne, seul le
+> *checkout* échoue : ne pas conclure « Questa marche » à partir de `-version`.
+
 **Fait vérifié** (à ne pas répéter de travers) : cocotb **ne pilote pas XSim**.
 Dans cocotb 2.0.1, la liste des simulateurs supportés est :
 ```
