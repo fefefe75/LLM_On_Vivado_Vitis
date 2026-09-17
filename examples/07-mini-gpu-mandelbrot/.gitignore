@@ -5,3 +5,8 @@ build/
 __pycache__/
 *.ghw
 *.dcp
+vivado_gui/
+*.str
+clockInfo.txt
+*.backup.jou
+*.backup.log
