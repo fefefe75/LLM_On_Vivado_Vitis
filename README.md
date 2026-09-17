@@ -85,6 +85,7 @@ templates/             vivado/ tcl scripts · cocotb/ makefiles+helpers · vhdl/
                        constraints/ · project/ (project skeleton + Makefile toolbox)
 examples/              01 counter · 02 ALU · 03 FIFO · 04 pure-VHDL testbench (XSim)
                        05 RISC-V datapath (reference structure) · 06 PS/PL + Vitis
+                       07 mini-GPU: SIMT Mandelbrot accelerator (16 lanes, measured)
 mcp/                   the MCP server (Python), client configs, its own test suite
 scripts/               check_tcl.py (validates every Tcl script), helpers
 ```

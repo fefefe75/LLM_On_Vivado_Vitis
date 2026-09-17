@@ -1,0 +1,55 @@
+#-----------------------------------------------------------
+# Vivado v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 12:34:56 MST 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Thu Sep 17 16:42:25 2026
+# Process ID         : 1213487
+# Current directory  : /home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/vivado_gui/mini_gpu.runs/synth_1
+# Command line       : vivado -log top_mandelbrot.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source top_mandelbrot.tcl
+# Log file           : /home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/vivado_gui/mini_gpu.runs/synth_1/top_mandelbrot.vds
+# Journal file       : /home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/vivado_gui/mini_gpu.runs/synth_1/vivado.jou
+# Running On         : fedora
+# Platform           : Fedora
+# Operating System   : Fedora Linux 44 (Workstation Edition)
+# Processor Detail   : 13th Gen Intel(R) Core(TM) i7-1360P
+# CPU Frequency      : 2600.000 MHz
+# CPU Physical cores : 12
+# CPU Logical cores  : 16
+# Host memory        : 16344 MB
+# Swap memory        : 8589 MB
+# Total Virtual      : 24934 MB
+# Available Virtual  : 11365 MB
+#-----------------------------------------------------------
+source top_mandelbrot.tcl -notrace
+Command: synth_design -top top_mandelbrot -part xc7z020clg400-1
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020'
+INFO: [Device 21-403] Loading part xc7z020clg400-1
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 7 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 1214333
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:05 ; elapsed = 00:00:05 . Memory (MB): peak = 2481.074 ; gain = 480.844 ; free physical = 269 ; free virtual = 9763
+---------------------------------------------------------------------------------
+ERROR: [Synth 8-10557] cannot read from 'out' object 'o_px_valid'; use 'buffer' or 'inout' instead [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_gpu.vhd:298]
+ERROR: [Synth 8-10557] cannot read from 'out' object 'o_px_valid'; use 'buffer' or 'inout' instead [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_gpu.vhd:335]
+ERROR: [Synth 8-10557] cannot read from 'out' object 'o_px_valid'; use 'buffer' or 'inout' instead [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_gpu.vhd:329]
+ERROR: [Synth 8-10557] cannot read from 'out' object 'o_cycles'; use 'buffer' or 'inout' instead [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_gpu.vhd:370]
+ERROR: [Synth 8-10557] cannot read from 'out' object 'o_px_valid'; use 'buffer' or 'inout' instead [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_gpu.vhd:381]
+INFO: [Synth 8-11252] unit 'rtl' is ignored due to previous errors [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_gpu.vhd:391]
+INFO: [Synth 8-10443] VHDL file '/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_gpu.vhd' is ignored due to errors
+ERROR: [Synth 8-12189] Failed to read vhdl '/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_gpu.vhd'
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:06 ; elapsed = 00:00:06 . Memory (MB): peak = 2563.043 ; gain = 562.812 ; free physical = 196 ; free virtual = 9636
+---------------------------------------------------------------------------------
+RTL Elaboration failed
+INFO: [Common 17-83] Releasing license: Synthesis
+8 Infos, 0 Warnings, 0 Critical Warnings and 7 Errors encountered.
+synth_design failed
+synth_design: Time (s): cpu = 00:00:10 ; elapsed = 00:00:10 . Memory (MB): peak = 2563.051 ; gain = 716.648 ; free physical = 191 ; free virtual = 9633
+INFO: [Common 17-2834] synth_design peak Physical Memory [PSS] (MB): overall = 1769.757; main = 1478.877; forked = 290.880
+INFO: [Common 17-2834] synth_design peak Virtual Memory [VSS] (MB): overall = 4209.738; main = 2563.047; forked = 1646.691
+ERROR: [Common 17-69] Command failed: Synthesis failed - please see the console or run log file for details
+INFO: [Common 17-206] Exiting Vivado at Thu Sep 17 16:42:40 2026...

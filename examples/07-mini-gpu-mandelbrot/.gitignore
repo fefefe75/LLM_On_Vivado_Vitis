@@ -1,0 +1,7 @@
+# artefacts de cet exemple
+sim_build/
+images/
+build/
+__pycache__/
+*.ghw
+*.dcp

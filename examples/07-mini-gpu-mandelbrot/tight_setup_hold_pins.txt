@@ -1,0 +1,26 @@
++====================+===================+===================================================+
+| Launch Setup Clock | Launch Hold Clock | Pin                                               |
++====================+===================+===================================================+
+| i_clk              | i_clk             | u_gpu/s_r_reg[7]/D                                |
+| i_clk              | i_clk             | u_gpu/s_r_reg[6]/D                                |
+| i_clk              | i_clk             | u_gpu/s_r_reg[4]/D                                |
+| i_clk              | i_clk             | u_gpu/s_r_reg[1]/D                                |
+| i_clk              | i_clk             | u_gpu/g_lanes[15].u_lane/FSM_onehot_etat_reg[3]/D |
+| i_clk              | i_clk             | u_gpu/g_lanes[15].u_lane/FSM_onehot_etat_reg[4]/D |
+| i_clk              | i_clk             | u_gpu/s_r_reg[3]/D                                |
+| i_clk              | i_clk             | u_gpu/s_r_reg[5]/D                                |
+| i_clk              | i_clk             | u_gpu/s_occ_reg[4][1]/D                           |
+| i_clk              | i_clk             | u_gpu/g_lanes[5].u_lane/FSM_onehot_etat_reg[3]/D  |
+| i_clk              | i_clk             | u_gpu/g_lanes[10].u_lane/FSM_onehot_etat_reg[3]/D |
+| i_clk              | i_clk             | u_gpu/g_lanes[5].u_lane/FSM_onehot_etat_reg[4]/D  |
+| i_clk              | i_clk             | u_gpu/g_lanes[10].u_lane/FSM_onehot_etat_reg[4]/D |
+| i_clk              | i_clk             | u_gpu/s_occ_reg[1][0]/D                           |
+| i_clk              | i_clk             | u_gpu/s_r_reg[0]/D                                |
+| i_clk              | i_clk             | u_gpu/s_occ_reg[13][0]/D                          |
+| i_clk              | i_clk             | u_gpu/s_occ_reg[13][1]/D                          |
+| i_clk              | i_clk             | u_gpu/s_occ_reg[1][1]/D                           |
+| i_clk              | i_clk             | u_gpu/g_lanes[15].u_lane/escaped_reg/D            |
+| i_clk              | i_clk             | u_gpu/s_occ_reg[7][0]/D                           |
+| i_clk              | i_clk             | u_gpu/s_occ_reg[7][1]/D                           |
+| i_clk              | i_clk             | u_gpu/g_lanes[3].u_lane/escaped_reg/D             |
++--------------------+-------------------+---------------------------------------------------+

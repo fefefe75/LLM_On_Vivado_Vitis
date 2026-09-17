@@ -45,11 +45,13 @@ section () { printf '\n=== %s ===\n' "$1"; }
 
 # --- outils ----------------------------------------------------------------
 section "outils disponibles"
-have_ghdl=0; have_tclsh=0; have_vivado=0; have_pytest=0
+have_ghdl=0; have_tclsh=0; have_vivado=0; have_pytest=0; have_cocotb=0
 command -v "$GHDL_BIN" >/dev/null 2>&1 && have_ghdl=1
 command -v tclsh      >/dev/null 2>&1 && have_tclsh=1
 command -v vivado     >/dev/null 2>&1 && have_vivado=1
 "$PY" -c "import pytest" >/dev/null 2>&1 && have_pytest=1
+# cocotb : la bibliotheque Python suffit (les exemples utilisent aussi cocotb-config)
+"$PY" -c "import cocotb" >/dev/null 2>&1 && have_cocotb=1
 ligne "ghdl"   "$([ $have_ghdl  -eq 1 ] && $GHDL_BIN --version | head -1 || echo 'absent')"
 ligne "tclsh"  "$([ $have_tclsh -eq 1 ] && tclsh <<< 'puts [info patchlevel]' || echo 'absent')"
 ligne "vivado" "$([ $have_vivado -eq 1 ] && echo 'present (cibles EDA possibles)' || echo 'absent (cibles EDA ignorees)')"
@@ -113,6 +115,28 @@ if [ -x "$d/tb/run_sim.sh" ] && command -v xvhdl >/dev/null 2>&1; then
     verifie "04 (XSim : run_sim.sh)" "$?"
 else
     ignore "04 (XSim)" "xvhdl absent (sourcer Vivado)"
+fi
+
+# --- exemple 07 : mini-GPU SIMT (Mandelbrot) --------------------------------
+section "exemple 07 - mini-GPU SIMT (Mandelbrot)"
+d="$REPO/examples/07-mini-gpu-mandelbrot"
+if [ $have_ghdl -eq 1 ] && [ $have_cocotb -eq 1 ]; then
+    # petite image : quelques milliers de cycles, comparaison exacte au modele Python
+    ( cd "$d/tb" && "$PY" run_tests.py --lanes 8 -w 48 -H 32 --max-iter 32 \
+        > "$LOGDIR/07.log" 2>&1 )
+    rc=$?
+    ligne "07 (mini-GPU)" "$(grep -a 'TESTS=' "$LOGDIR/07.log" | tail -1 | sed 's/^.*\*\*//; s/\*\*.*$//')"
+    verifie "07-mini-gpu (test de correction)" "$rc"
+else
+    ignore "07-mini-gpu" "ghdl ou cocotb absent"
+fi
+if [ $have_ghdl -eq 1 ] && [ $have_cocotb -eq 1 ] && [ "${MG_PERF:-0}" = "1" ]; then
+    # mesure de debit : desactivee par defaut (plusieurs minutes), activer avec MG_PERF=1
+    ( cd "$d/tb" && "$PY" bench_lanes.py --lanes 1 4 16 -w 64 -H 48 -i 32 \
+        > "$LOGDIR/07-debit.log" 2>&1 )
+    verifie "07-mini-gpu (mesure de debit)" "$?"
+else
+    ignore "07-mini-gpu (debit)" "activer avec MG_PERF=1"
 fi
 
 # --- templates -------------------------------------------------------------
