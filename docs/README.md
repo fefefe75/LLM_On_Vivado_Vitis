@@ -25,6 +25,15 @@ Deux autres ensembles de documents :
 
 ## Ce qui est prouvé, et comment
 
+Le tout se rejoue en une commande :
+```bash
+bash scripts/verify_all.sh    # 11 vérifications : exemples, templates, MCP, Tcl,
+                              # et (si Vivado est dans le PATH) une synthèse réelle
+                              # dont les rapports sont ensuite analysés
+```
+Le script n'affiche `OK` que sur un code retour nul, et `IGNORE` (jamais `OK`) pour
+ce qu'il n'a pas pu exécuter.
+
 | Affirmation | Preuve |
 |---|---|
 | Le flux Vivado complet marche | `top.bit` de 4 Mo généré, `STATUS=write_bitstream Complete!`, WNS 7.317 ns |

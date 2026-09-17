@@ -65,10 +65,14 @@ skill : elle doit dire **quand** l'utiliser.
 ## Vérifier avant de proposer une modification
 
 ```bash
-python3 scripts/check_tcl.py .                       # tous les scripts Tcl (syntaxe + procs)
-cd mcp && python -m pytest -q                        # le serveur MCP (52 tests)
+bash scripts/verify_all.sh                           # tout : exemples, templates, MCP, Tcl, Vivado
+python3 scripts/check_tcl.py .                       # scripts Tcl seulement (syntaxe + procs)
+python3 scripts/verify_vivado.py                     # flux Vivado réel (après settings64.sh)
+cd mcp && python -m pytest -q                        # serveur MCP (52 tests)
 cd examples/01-counter-cocotb/tb && make             # un testbench qui doit rester vert
 ```
-Un script Tcl qui ne passe pas `check_tcl.py` ne sera pas accepté : c'est le seul
-garde-fou automatique contre le piège du comptage d'accolades (Tcl compte les
-accolades même dans un commentaire, à l'intérieur d'un bloc).
+`scripts/verify_all.sh` est la référence : il n'affiche `OK` que sur un code retour
+nul, et `IGNORE` pour ce qu'il n'a pas pu exécuter (par exemple XSim si Vivado n'est
+pas sourcé). Un script Tcl qui ne passe pas `check_tcl.py` ne sera pas accepté :
+c'est le seul garde-fou automatique contre le piège du comptage d'accolades (Tcl
+compte les accolades même dans un commentaire, à l'intérieur d'un bloc).

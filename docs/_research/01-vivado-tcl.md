@@ -660,6 +660,11 @@ set part [opt PART xc7a35tcpg236-1]
   `set outputDir ./Tutorial_Created_Data/…; file mkdir $outputDir`.
 - Syntax-check HDL before a long run: `check_syntax [-fileset <arg>] [-return_string] [-quiet] [-verbose]`.
 - `-quiet` is a trap for CI (see §2.4). Use it only where an empty/absent object is legitimate.
+- **Bracket escaping (verified in `tclsh 8.6`).** Message IDs and any argument containing `[`…`]`
+  are command-substituted inside double quotes. `set_msg_config -id "[Synth 8-327]"` fails with
+  `invalid command name "Synth"`; use braces or escapes instead:
+  `-id {[Synth 8-327]}` or `-id "\[Synth 8-327\]"` — both pass the literal string `[Synth 8-327]`.
+  The same rule applies to regexp patterns that match log text (`[Common 17-69]` …).
 - Reuse the journal: every GUI action is a Tcl command recorded in `vivado.jou`; *"You can use this
   file to develop scripts for either mode."*
   (<https://docs.amd.com/r/en-US/ug892-vivado-design-flows-overview/Tcl-Command-Differences-in-Project-Mode-and-Non-Project-Mode>)
@@ -754,8 +759,10 @@ foreach id {{Synth 8-327} {Synth 8-6859} {Vivado 12-584} {Place 30-574}} {
 }
 ```
 
-⚠ `-id` strings are matched with the bracketed form for some IDs
-(UG835 shows both `-id "Synth 8-32"` and `-id {[Synth 8-32]}`); when in doubt pass the braced form.
+⚠ **`-id` quoting (verified in `tclsh 8.6`).** UG835 shows both `-id "Synth 8-32"` and
+`-id {[Synth 8-32]}`. Because brackets are command-substituted inside double quotes, the braced form
+is the only safe one for message IDs that contain them:
+`-id {[Synth 8-327]}` → literal `[Synth 8-327]`; `-id "[Synth 8-327]"` → `invalid command name "Synth"`.
 
 ### 8.5 Log triage recipes
 
@@ -1059,6 +1066,16 @@ build failed
 All four scripts are self-contained, use only commands verified on the UG835 v2026.1 pages, print a
 machine-readable `BUILD_RESULT: OK|FAIL …` line, and exit non-zero on failure (§2.4).
 Invoke them with `vivado -mode batch -source <script>.tcl -tclargs "KEY=value" …`.
+
+> **How these scripts were validated.** Vivado is not installed on the machine where this note was
+> written, so the scripts were extracted from this document and executed under `tclsh 8.6` against a
+> stub layer defining every Vivado command used (returning plausible values). That exercised argument
+> parsing, `catch`/`step` handling, step ordering, the run-status gate (`PROGRESS != 100%`), the
+> timing verdict and the DONE check. Verified: happy paths print `BUILD_RESULT: OK` and exit 0;
+> a missing argument and a run stuck at `50%` and a `launch_runs` Tcl error all print
+> `BUILD_RESULT: FAIL step=…` and exit 1; all four scripts pass `info complete`.
+> **What remains untested:** the actual Vivado semantics (file paths inside `<project>.runs/`,
+> exact `STATUS` strings, `get_msg_config -count` output, real `hw_server` interaction).
 
 ### 12.1 `create_project.tcl`
 

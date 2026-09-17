@@ -94,6 +94,16 @@ scripts/               check_tcl.py (validates every Tcl script), helpers
 Every non-obvious claim is either measured or explicitly flagged as unverified.
 Nothing here is presented as fact because it "sounds right".
 
+**Reproduce all of it yourself:**
+
+```bash
+bash scripts/verify_all.sh        # 11 checks: every example + templates + MCP tests
+                                  # + the Tcl scripts, and (if Vivado is in PATH)
+                                  # a real synthesis whose reports are then parsed
+```
+The script prints `OK` only on a null exit code and says `IGNORE` (never `OK`) for
+anything it could not run — e.g. XSim when Vivado is not sourced.
+
 | Verified (on this machine) | How |
 |---|---|
 | Full Vivado flow to a bitstream | executed on Vivado 2025.2; `top.bit` 4 MB, WNS 7.317 ns |
