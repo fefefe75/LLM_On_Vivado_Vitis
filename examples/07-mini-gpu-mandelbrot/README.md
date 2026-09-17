@@ -138,6 +138,12 @@ Ce que ce tableau enseigne, et qu'aucune formule ne remplace :
 
 Reproductible en une commande : `cd tb && make bench`.
 
+> Détail de mesure : la configuration à 1 voie affiche **60 977** cycles ici et
+> **60 978** dans le test de correction ci-dessus. L'écart d'un cycle vient de deux
+> méthodes différentes — le banc lit le compteur matériel `o_cycles` au moment du pulse
+> `o_done`, le test compte les fronts d'horloge jusqu'à ce même pulse. Les deux sont
+> justes ; je préfère l'écrire que de laisser croire à une incohérence.
+
 > Correction d'une estimation que j'avais écrite ici : j'avais annoncé « GHDL simule ce
 > design à ~500 cycles/s, donc le balayage est long ». **C'était faux** — c'était mon
 > banc de test qui coûtait 0,6 ms de Python par cycle d'horloge. GHDL est en réalité
