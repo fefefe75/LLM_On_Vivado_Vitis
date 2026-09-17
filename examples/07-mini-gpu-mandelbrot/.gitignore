@@ -10,3 +10,4 @@ vivado_gui/
 clockInfo.txt
 *.backup.jou
 *.backup.log
+images_*/

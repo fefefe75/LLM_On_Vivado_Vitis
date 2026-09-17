@@ -72,10 +72,11 @@ Tout est reproductible avec les commandes données en §6.
 > après* la comparaison des pixels et l'affichage des métriques, mais *avant* l'écriture
 > de son image PNG et la ligne `passed` (arrêt volontaire de la machine pour libérer la
 > place à l'IHM Vivado). Aucune ligne d'écart de pixel n'a été produite. Le détail est
-> reproductible en une commande (§6). De même, les chiffres de synthèse du §5 ont été
-> obtenus avant un recâblage purement structurel des sorties (signaux internes au lieu
-> d'une lecture de ports `out`, §8) : la logique est identique, mais une re-synthèse
-> après ce recâblage reste à faire si l'on veut des chiffres au bit près.
+> reproductible en une commande (§6). Les chiffres de synthèse du §5, eux, ont été obtenus
+> avant un recâblage purement structurel des sorties (signaux internes au lieu d'une
+> lecture de ports `out`, §8), mais **ce recâblage a été validé depuis** : compilation
+> Vivado réussie dans le projet de l'IHM (`synth_design completed successfully`, 32 s) et
+> re-simulation complète du banc (48×32, les deux tests `passed`).
 
 Le modèle de référence Python refait le **même** calcul entièrement en entier, opération
 par opération, débordements 32 bits compris — la comparaison est une égalité, pas une
@@ -94,8 +95,14 @@ Deux configurations mesurées sur la même vue classique, en comparant à chaque
 
 | Image | Voies | Itérations max | Cycles du rendu | Cycles / pixel | Efficacité parallèle | Perte par divergence |
 |---|---|---|---|---|---|---|
+| 48 × 32 (1536 px) | 8 | 32 | **8 271** | **5,38** | **85,2 %** | 14,8 % |
 | 96 × 64 (6144 px) | 8 | 64 | **50 528** | **8,22** | **90,2 %** | 9,8 % |
 | 320 × 240 (76800 px) | 16 | 128 | **572 057** | **7,45** | **86,8 %** | 13,2 % |
+
+Les trois lignes sont des mesures réelles. La première (48×32) est celle qui a été
+rejouée **après** le recâblage des sorties décrit au §8 : ses **deux tests passent**
+(`test_petite_image_egale_le_modele` et `test_image_complete_et_image_png`), donc le RTL
+tel qu'il est livré dans ce dépôt est bien vérifié par simulation, pas seulement analysé.
 
 L'efficacité est calculée **uniquement à partir de la sortie du design** :
 `travail utile = Σ(3 × itérations + 2)` sur tous les pixels, comparé à

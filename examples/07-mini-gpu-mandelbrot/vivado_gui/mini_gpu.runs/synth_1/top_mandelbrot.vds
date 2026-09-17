@@ -3,8 +3,8 @@
 # SW Build 6299465 on Fri Nov 14 12:34:56 MST 2025
 # IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
 # SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
-# Start of session at: Thu Sep 17 16:42:25 2026
-# Process ID         : 1213487
+# Start of session at: Thu Sep 17 16:55:21 2026
+# Process ID         : 1280497
 # Current directory  : /home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/vivado_gui/mini_gpu.runs/synth_1
 # Command line       : vivado -log top_mandelbrot.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source top_mandelbrot.tcl
 # Log file           : /home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/vivado_gui/mini_gpu.runs/synth_1/top_mandelbrot.vds
@@ -13,13 +13,13 @@
 # Platform           : Fedora
 # Operating System   : Fedora Linux 44 (Workstation Edition)
 # Processor Detail   : 13th Gen Intel(R) Core(TM) i7-1360P
-# CPU Frequency      : 2600.000 MHz
+# CPU Frequency      : 3799.961 MHz
 # CPU Physical cores : 12
 # CPU Logical cores  : 16
 # Host memory        : 16344 MB
 # Swap memory        : 8589 MB
 # Total Virtual      : 24934 MB
-# Available Virtual  : 11365 MB
+# Available Virtual  : 10825 MB
 #-----------------------------------------------------------
 source top_mandelbrot.tcl -notrace
 Command: synth_design -top top_mandelbrot -part xc7z020clg400-1
@@ -29,27 +29,1207 @@ INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020
 INFO: [Device 21-403] Loading part xc7z020clg400-1
 INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 7 processes.
 INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
-INFO: [Synth 8-7075] Helper process launched with PID 1214333
+INFO: [Synth 8-7075] Helper process launched with PID 1281194
 ---------------------------------------------------------------------------------
-Starting RTL Elaboration : Time (s): cpu = 00:00:05 ; elapsed = 00:00:05 . Memory (MB): peak = 2481.074 ; gain = 480.844 ; free physical = 269 ; free virtual = 9763
+Starting RTL Elaboration : Time (s): cpu = 00:00:04 ; elapsed = 00:00:04 . Memory (MB): peak = 2480.797 ; gain = 482.188 ; free physical = 250 ; free virtual = 9027
 ---------------------------------------------------------------------------------
-ERROR: [Synth 8-10557] cannot read from 'out' object 'o_px_valid'; use 'buffer' or 'inout' instead [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_gpu.vhd:298]
-ERROR: [Synth 8-10557] cannot read from 'out' object 'o_px_valid'; use 'buffer' or 'inout' instead [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_gpu.vhd:335]
-ERROR: [Synth 8-10557] cannot read from 'out' object 'o_px_valid'; use 'buffer' or 'inout' instead [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_gpu.vhd:329]
-ERROR: [Synth 8-10557] cannot read from 'out' object 'o_cycles'; use 'buffer' or 'inout' instead [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_gpu.vhd:370]
-ERROR: [Synth 8-10557] cannot read from 'out' object 'o_px_valid'; use 'buffer' or 'inout' instead [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_gpu.vhd:381]
-INFO: [Synth 8-11252] unit 'rtl' is ignored due to previous errors [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_gpu.vhd:391]
-INFO: [Synth 8-10443] VHDL file '/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_gpu.vhd' is ignored due to errors
-ERROR: [Synth 8-12189] Failed to read vhdl '/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_gpu.vhd'
+INFO: [Synth 8-638] synthesizing module 'top_mandelbrot' [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/top_mandelbrot.vhd:38]
+	Parameter C_LANES bound to: 8 - type: integer 
+	Parameter C_IMG_W bound to: 640 - type: integer 
+	Parameter C_IMG_H bound to: 480 - type: integer 
+	Parameter C_MAX_ITER bound to: 128 - type: integer 
+INFO: [Synth 8-638] synthesizing module 'mandelbrot_gpu' [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_gpu.vhd:78]
+	Parameter C_IMG_W bound to: 640 - type: integer 
+	Parameter C_IMG_H bound to: 480 - type: integer 
+	Parameter C_LANES bound to: 8 - type: integer 
+	Parameter C_MAX_ITER bound to: 128 - type: integer 
+	Parameter C_XW bound to: 10 - type: integer 
+	Parameter C_YW bound to: 9 - type: integer 
+INFO: [Synth 8-638] synthesizing module 'mandelbrot_lane' [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_lane.vhd:42]
+	Parameter C_WIDTH bound to: 32 - type: integer 
+	Parameter C_FRAC bound to: 26 - type: integer 
+	Parameter C_MAX_ITER bound to: 128 - type: integer 
+	Parameter C_ITER_W bound to: 8 - type: integer 
+INFO: [Synth 8-256] done synthesizing module 'mandelbrot_lane' (0#1) [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_lane.vhd:42]
+INFO: [Synth 8-256] done synthesizing module 'mandelbrot_gpu' (0#1) [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/mandelbrot_gpu.vhd:78]
+INFO: [Synth 8-256] done synthesizing module 'top_mandelbrot' (0#1) [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/rtl/top_mandelbrot.vhd:38]
 ---------------------------------------------------------------------------------
-Finished RTL Elaboration : Time (s): cpu = 00:00:06 ; elapsed = 00:00:06 . Memory (MB): peak = 2563.043 ; gain = 562.812 ; free physical = 196 ; free virtual = 9636
+Finished RTL Elaboration : Time (s): cpu = 00:00:05 ; elapsed = 00:00:05 . Memory (MB): peak = 2602.766 ; gain = 604.156 ; free physical = 167 ; free virtual = 8877
 ---------------------------------------------------------------------------------
-RTL Elaboration failed
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:05 ; elapsed = 00:00:05 . Memory (MB): peak = 2617.609 ; gain = 619.000 ; free physical = 163 ; free virtual = 8873
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:05 ; elapsed = 00:00:05 . Memory (MB): peak = 2617.609 ; gain = 619.000 ; free physical = 163 ; free virtual = 8873
+---------------------------------------------------------------------------------
+Netlist sorting complete. Time (s): cpu = 00:00:00.03 ; elapsed = 00:00:00.03 . Memory (MB): peak = 2617.609 ; gain = 0.000 ; free physical = 164 ; free virtual = 8874
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/constraints/timing.xdc]
+Finished Parsing XDC File [/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/constraints/timing.xdc]
+Completed Processing XDC Constraints
+
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2719.348 ; gain = 0.000 ; free physical = 250 ; free virtual = 8766
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00.05 ; elapsed = 00:00:00.02 . Memory (MB): peak = 2719.383 ; gain = 0.000 ; free physical = 250 ; free virtual = 8766
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:11 ; elapsed = 00:00:11 . Memory (MB): peak = 2719.383 ; gain = 720.773 ; free physical = 257 ; free virtual = 8732
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7z020clg400-1
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:11 ; elapsed = 00:00:11 . Memory (MB): peak = 2727.352 ; gain = 728.742 ; free physical = 257 ; free virtual = 8731
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying 'set_property' XDC Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:11 ; elapsed = 00:00:11 . Memory (MB): peak = 2727.352 ; gain = 728.742 ; free physical = 257 ; free virtual = 8731
+---------------------------------------------------------------------------------
+INFO: [Synth 8-802] inferred FSM for state register 'etat_reg' in module 'mandelbrot_lane'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+                  s_idle |                            00001 |                              000
+                  s_prod |                            00010 |                              001
+                s_decide |                            00100 |                              010
+                  s_emit |                            01000 |                              100
+                s_update |                            10000 |                              011
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'etat_reg' using encoding 'one-hot' in module 'mandelbrot_lane'
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:11 ; elapsed = 00:00:12 . Memory (MB): peak = 2727.352 ; gain = 728.742 ; free physical = 256 ; free virtual = 8732
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   3 Input   64 Bit       Adders := 8     
+	   2 Input   64 Bit       Adders := 8     
+	   2 Input   32 Bit       Adders := 16    
+	   2 Input   30 Bit       Adders := 1     
+	   2 Input   29 Bit       Adders := 1     
+	   2 Input   10 Bit       Adders := 1     
+	   2 Input    9 Bit       Adders := 1     
+	   2 Input    8 Bit       Adders := 8     
+	   2 Input    3 Bit       Adders := 9     
+	   2 Input    2 Bit       Adders := 8     
++---Registers : 
+	               64 Bit    Registers := 24    
+	               32 Bit    Registers := 32    
+	               30 Bit    Registers := 8     
+	               29 Bit    Registers := 8     
+	               10 Bit    Registers := 28    
+	                9 Bit    Registers := 26    
+	                8 Bit    Registers := 28    
+	                3 Bit    Registers := 3     
+	                2 Bit    Registers := 8     
+	                1 Bit    Registers := 30    
++---Multipliers : 
+	              32x32  Multipliers := 24    
+	              10x30  Multipliers := 1     
++---Muxes : 
+	   5 Input   32 Bit        Muxes := 16    
+	   2 Input    9 Bit        Muxes := 1     
+	   5 Input    8 Bit        Muxes := 8     
+	   2 Input    8 Bit        Muxes := 2     
+	   5 Input    5 Bit        Muxes := 8     
+	   2 Input    5 Bit        Muxes := 16    
+	   2 Input    3 Bit        Muxes := 15    
+	   2 Input    2 Bit        Muxes := 8     
+	   2 Input    1 Bit        Muxes := 57    
+	   5 Input    1 Bit        Muxes := 40    
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 220 (col length:60)
+BRAMs: 280 (col length: RAMB18 60 RAMB36 30)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+DSP Report: Generating DSP p_rr0, operation Mode is: A2*B2.
+DSP Report: register zr_reg is absorbed into DSP p_rr0.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: Generating DSP p_rr_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: Generating DSP p_rr0, operation Mode is: A2*B2.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: Generating DSP p_rr_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: Generating DSP ARG, operation Mode is: A2*B2.
+DSP Report: register zr_reg is absorbed into DSP ARG.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zi_reg is absorbed into DSP ARG.
+DSP Report: register zr_reg is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: A2*B2.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zi_reg is absorbed into DSP ARG.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP p_ii0, operation Mode is: A2*B2.
+DSP Report: register zi_reg is absorbed into DSP p_ii0.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: Generating DSP p_ii_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: Generating DSP p_ii0, operation Mode is: A2*B2.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: Generating DSP p_ii_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: Generating DSP p_rr0, operation Mode is: A2*B2.
+DSP Report: register zr_reg is absorbed into DSP p_rr0.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: Generating DSP p_rr_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: Generating DSP p_rr0, operation Mode is: A2*B2.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: Generating DSP p_rr_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: Generating DSP ARG, operation Mode is: A2*B2.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: register zr_reg is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zr_reg is absorbed into DSP ARG.
+DSP Report: register zi_reg is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: A2*B2.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zi_reg is absorbed into DSP ARG.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP p_ii0, operation Mode is: A2*B2.
+DSP Report: register zi_reg is absorbed into DSP p_ii0.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: Generating DSP p_ii_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: Generating DSP p_ii0, operation Mode is: A2*B2.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: Generating DSP p_ii_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: Generating DSP p_rr0, operation Mode is: A2*B2.
+DSP Report: register zr_reg is absorbed into DSP p_rr0.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: Generating DSP p_rr_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: Generating DSP p_rr0, operation Mode is: A2*B2.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: Generating DSP p_rr_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: Generating DSP ARG, operation Mode is: A2*B2.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: register zr_reg is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zr_reg is absorbed into DSP ARG.
+DSP Report: register zi_reg is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: A2*B2.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zi_reg is absorbed into DSP ARG.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP p_ii0, operation Mode is: A2*B2.
+DSP Report: register zi_reg is absorbed into DSP p_ii0.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: Generating DSP p_ii_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: Generating DSP p_ii0, operation Mode is: A2*B2.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: Generating DSP p_ii_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: Generating DSP p_rr0, operation Mode is: A2*B2.
+DSP Report: register zr_reg is absorbed into DSP p_rr0.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: Generating DSP p_rr_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: Generating DSP p_rr0, operation Mode is: A2*B2.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: Generating DSP p_rr_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: Generating DSP ARG, operation Mode is: A2*B2.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: register zr_reg is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zr_reg is absorbed into DSP ARG.
+DSP Report: register zi_reg is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: A2*B2.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zi_reg is absorbed into DSP ARG.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP p_ii0, operation Mode is: A2*B2.
+DSP Report: register zi_reg is absorbed into DSP p_ii0.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: Generating DSP p_ii_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: Generating DSP p_ii0, operation Mode is: A2*B2.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: Generating DSP p_ii_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: Generating DSP p_rr0, operation Mode is: A2*B2.
+DSP Report: register zr_reg is absorbed into DSP p_rr0.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: Generating DSP p_rr_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: Generating DSP p_rr0, operation Mode is: A2*B2.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: Generating DSP p_rr_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: Generating DSP ARG, operation Mode is: A2*B2.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: register zr_reg is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zr_reg is absorbed into DSP ARG.
+DSP Report: register zi_reg is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: A2*B2.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zi_reg is absorbed into DSP ARG.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP p_ii0, operation Mode is: A2*B2.
+DSP Report: register zi_reg is absorbed into DSP p_ii0.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: Generating DSP p_ii_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: Generating DSP p_ii0, operation Mode is: A2*B2.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: Generating DSP p_ii_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: Generating DSP p_rr0, operation Mode is: A2*B2.
+DSP Report: register zr_reg is absorbed into DSP p_rr0.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: Generating DSP p_rr_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: Generating DSP p_rr0, operation Mode is: A2*B2.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: Generating DSP p_rr_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: Generating DSP ARG, operation Mode is: A2*B2.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: register zr_reg is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zr_reg is absorbed into DSP ARG.
+DSP Report: register zi_reg is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: A2*B2.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zi_reg is absorbed into DSP ARG.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP p_ii0, operation Mode is: A2*B2.
+DSP Report: register zi_reg is absorbed into DSP p_ii0.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: Generating DSP p_ii_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: Generating DSP p_ii0, operation Mode is: A2*B2.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: Generating DSP p_ii_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: Generating DSP p_rr0, operation Mode is: A2*B2.
+DSP Report: register zr_reg is absorbed into DSP p_rr0.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: Generating DSP p_rr_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: Generating DSP p_rr0, operation Mode is: A2*B2.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: Generating DSP p_rr_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: Generating DSP ARG, operation Mode is: A2*B2.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: register zr_reg is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zr_reg is absorbed into DSP ARG.
+DSP Report: register zi_reg is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: A2*B2.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zi_reg is absorbed into DSP ARG.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP p_ii0, operation Mode is: A2*B2.
+DSP Report: register zi_reg is absorbed into DSP p_ii0.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: Generating DSP p_ii_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: Generating DSP p_ii0, operation Mode is: A2*B2.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: Generating DSP p_ii_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: Generating DSP p_rr0, operation Mode is: A2*B2.
+DSP Report: register zr_reg is absorbed into DSP p_rr0.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: Generating DSP p_rr_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: Generating DSP p_rr0, operation Mode is: A2*B2.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: register p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr0.
+DSP Report: Generating DSP p_rr_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register zr_reg is absorbed into DSP p_rr_reg.
+DSP Report: register p_rr_reg is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: operator p_rr0 is absorbed into DSP p_rr_reg.
+DSP Report: Generating DSP ARG, operation Mode is: A2*B2.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: register zr_reg is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zr_reg is absorbed into DSP ARG.
+DSP Report: register zi_reg is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: A2*B2.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP ARG, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zi_reg is absorbed into DSP ARG.
+DSP Report: register ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: operator ARG is absorbed into DSP ARG.
+DSP Report: Generating DSP p_ii0, operation Mode is: A2*B2.
+DSP Report: register zi_reg is absorbed into DSP p_ii0.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: Generating DSP p_ii_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: Generating DSP p_ii0, operation Mode is: A2*B2.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: register p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii0.
+DSP Report: Generating DSP p_ii_reg, operation Mode is: (PCIN>>17)+A2*B2.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: register zi_reg is absorbed into DSP p_ii_reg.
+DSP Report: register p_ii_reg is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: operator p_ii0 is absorbed into DSP p_ii_reg.
+DSP Report: Generating DSP f_cr0, operation Mode is: (A:0x7ae1)*B2.
+DSP Report: register f_cr0 is absorbed into DSP f_cr0.
+DSP Report: operator f_cr0 is absorbed into DSP f_cr0.
+DSP Report: operator f_cr0 is absorbed into DSP f_cr0.
+DSP Report: Generating DSP f_cr0, operation Mode is: (PCIN>>17)+A*B2.
+DSP Report: register f_cr0 is absorbed into DSP f_cr0.
+DSP Report: operator f_cr0 is absorbed into DSP f_cr0.
+DSP Report: operator f_cr0 is absorbed into DSP f_cr0.
+DSP Report: Generating DSP f_ci0, operation Mode is: (A:0x11eb8)*B2.
+DSP Report: register f_ci0 is absorbed into DSP f_ci0.
+DSP Report: operator f_ci0 is absorbed into DSP f_ci0.
+DSP Report: operator f_ci0 is absorbed into DSP f_ci0.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[47]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[46]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[45]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[44]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[43]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[42]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[41]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[40]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[39]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[38]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[37]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[36]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[35]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[34]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[33]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[32]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[31]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[30]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[29]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[28]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[27]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[26]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[25]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[24]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[23]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[22]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[21]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[20]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[19]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[18]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[17]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[47]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[46]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[45]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[44]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[43]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[42]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[41]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[40]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[39]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[38]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[37]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[36]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[35]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[34]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[33]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[32]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[31]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[30]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[29]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[28]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[27]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[26]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[25]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[24]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[23]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[22]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[21]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[20]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[19]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[18]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_rr_reg[17]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[47]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[46]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[45]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[44]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[43]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[42]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[41]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[40]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[39]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[38]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[37]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[36]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[35]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[34]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[33]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[32]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[31]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[30]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[29]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[28]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[27]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[26]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[25]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[24]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[23]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[22]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[21]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[20]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[19]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[18]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[17]) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[47]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[46]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[45]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[44]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[43]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[42]__0) is unused and will be removed from module mandelbrot_lane.
+WARNING: [Synth 8-3332] Sequential element (p_ii_reg[41]__0) is unused and will be removed from module mandelbrot_lane.
+INFO: [Common 17-14] Message 'Synth 8-3332' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:21 ; elapsed = 00:00:22 . Memory (MB): peak = 2746.352 ; gain = 747.742 ; free physical = 256 ; free virtual = 8635
+---------------------------------------------------------------------------------
+ Sort Area is  p_ii0_10 : 0 0 : 3137 5871 : Used 1 time 0
+ Sort Area is  p_ii0_10 : 0 1 : 2734 5871 : Used 1 time 0
+ Sort Area is  p_ii0_16 : 0 0 : 3137 5871 : Used 1 time 0
+ Sort Area is  p_ii0_16 : 0 1 : 2734 5871 : Used 1 time 0
+ Sort Area is  p_ii0_1c : 0 0 : 3137 5871 : Used 1 time 0
+ Sort Area is  p_ii0_1c : 0 1 : 2734 5871 : Used 1 time 0
+ Sort Area is  p_ii0_22 : 0 0 : 3137 5871 : Used 1 time 0
+ Sort Area is  p_ii0_22 : 0 1 : 2734 5871 : Used 1 time 0
+ Sort Area is  p_ii0_28 : 0 0 : 3137 5871 : Used 1 time 0
+ Sort Area is  p_ii0_28 : 0 1 : 2734 5871 : Used 1 time 0
+ Sort Area is  p_ii0_2e : 0 0 : 3137 5871 : Used 1 time 0
+ Sort Area is  p_ii0_2e : 0 1 : 2734 5871 : Used 1 time 0
+ Sort Area is  p_ii0_34 : 0 0 : 3137 5871 : Used 1 time 0
+ Sort Area is  p_ii0_34 : 0 1 : 2734 5871 : Used 1 time 0
+ Sort Area is  p_ii0_6 : 0 0 : 3137 5871 : Used 1 time 0
+ Sort Area is  p_ii0_6 : 0 1 : 2734 5871 : Used 1 time 0
+ Sort Area is  p_rr0_12 : 0 0 : 3137 5871 : Used 1 time 0
+ Sort Area is  p_rr0_12 : 0 1 : 2734 5871 : Used 1 time 0
+ Sort Area is  p_rr0_18 : 0 0 : 3137 5871 : Used 1 time 0
+ Sort Area is  p_rr0_18 : 0 1 : 2734 5871 : Used 1 time 0
+ Sort Area is  p_rr0_1e : 0 0 : 3137 5871 : Used 1 time 0
+ Sort Area is  p_rr0_1e : 0 1 : 2734 5871 : Used 1 time 0
+ Sort Area is  p_rr0_24 : 0 0 : 3137 5871 : Used 1 time 0
+ Sort Area is  p_rr0_24 : 0 1 : 2734 5871 : Used 1 time 0
+ Sort Area is  p_rr0_2a : 0 0 : 3137 5871 : Used 1 time 0
+ Sort Area is  p_rr0_2a : 0 1 : 2734 5871 : Used 1 time 0
+ Sort Area is  p_rr0_30 : 0 0 : 3137 5871 : Used 1 time 0
+ Sort Area is  p_rr0_30 : 0 1 : 2734 5871 : Used 1 time 0
+ Sort Area is  p_rr0_36 : 0 0 : 3137 5871 : Used 1 time 0
+ Sort Area is  p_rr0_36 : 0 1 : 2734 5871 : Used 1 time 0
+ Sort Area is  p_rr0_a : 0 0 : 3137 5871 : Used 1 time 0
+ Sort Area is  p_rr0_a : 0 1 : 2734 5871 : Used 1 time 0
+ Sort Area is  ARG_0 : 0 0 : 3137 5823 : Used 1 time 0
+ Sort Area is  ARG_0 : 0 1 : 2686 5823 : Used 1 time 0
+ Sort Area is  ARG_14 : 0 0 : 3137 5327 : Used 1 time 0
+ Sort Area is  ARG_14 : 0 1 : 2190 5327 : Used 1 time 0
+ Sort Area is  ARG_1a : 0 0 : 3137 5327 : Used 1 time 0
+ Sort Area is  ARG_1a : 0 1 : 2190 5327 : Used 1 time 0
+ Sort Area is  ARG_20 : 0 0 : 3137 5327 : Used 1 time 0
+ Sort Area is  ARG_20 : 0 1 : 2190 5327 : Used 1 time 0
+ Sort Area is  ARG_26 : 0 0 : 3137 5327 : Used 1 time 0
+ Sort Area is  ARG_26 : 0 1 : 2190 5327 : Used 1 time 0
+ Sort Area is  ARG_2c : 0 0 : 3137 5327 : Used 1 time 0
+ Sort Area is  ARG_2c : 0 1 : 2190 5327 : Used 1 time 0
+ Sort Area is  ARG_32 : 0 0 : 3137 5327 : Used 1 time 0
+ Sort Area is  ARG_32 : 0 1 : 2190 5327 : Used 1 time 0
+ Sort Area is  ARG_c : 0 0 : 3137 5327 : Used 1 time 0
+ Sort Area is  ARG_c : 0 1 : 2190 5327 : Used 1 time 0
+ Sort Area is  p_ii0_11 : 0 0 : 2667 5230 : Used 1 time 0
+ Sort Area is  p_ii0_11 : 0 1 : 2563 5230 : Used 1 time 0
+ Sort Area is  p_ii0_17 : 0 0 : 2667 5230 : Used 1 time 0
+ Sort Area is  p_ii0_17 : 0 1 : 2563 5230 : Used 1 time 0
+ Sort Area is  p_ii0_1d : 0 0 : 2667 5230 : Used 1 time 0
+ Sort Area is  p_ii0_1d : 0 1 : 2563 5230 : Used 1 time 0
+ Sort Area is  p_ii0_23 : 0 0 : 2667 5230 : Used 1 time 0
+ Sort Area is  p_ii0_23 : 0 1 : 2563 5230 : Used 1 time 0
+ Sort Area is  p_ii0_29 : 0 0 : 2667 5230 : Used 1 time 0
+ Sort Area is  p_ii0_29 : 0 1 : 2563 5230 : Used 1 time 0
+ Sort Area is  p_ii0_2f : 0 0 : 2667 5230 : Used 1 time 0
+ Sort Area is  p_ii0_2f : 0 1 : 2563 5230 : Used 1 time 0
+ Sort Area is  p_ii0_35 : 0 0 : 2667 5230 : Used 1 time 0
+ Sort Area is  p_ii0_35 : 0 1 : 2563 5230 : Used 1 time 0
+ Sort Area is  p_ii0_8 : 0 0 : 2667 5230 : Used 1 time 0
+ Sort Area is  p_ii0_8 : 0 1 : 2563 5230 : Used 1 time 0
+ Sort Area is  p_rr0_13 : 0 0 : 2667 5230 : Used 1 time 0
+ Sort Area is  p_rr0_13 : 0 1 : 2563 5230 : Used 1 time 0
+ Sort Area is  p_rr0_19 : 0 0 : 2667 5230 : Used 1 time 0
+ Sort Area is  p_rr0_19 : 0 1 : 2563 5230 : Used 1 time 0
+ Sort Area is  p_rr0_1f : 0 0 : 2667 5230 : Used 1 time 0
+ Sort Area is  p_rr0_1f : 0 1 : 2563 5230 : Used 1 time 0
+ Sort Area is  p_rr0_25 : 0 0 : 2667 5230 : Used 1 time 0
+ Sort Area is  p_rr0_25 : 0 1 : 2563 5230 : Used 1 time 0
+ Sort Area is  p_rr0_2b : 0 0 : 2667 5230 : Used 1 time 0
+ Sort Area is  p_rr0_2b : 0 1 : 2563 5230 : Used 1 time 0
+ Sort Area is  p_rr0_31 : 0 0 : 2667 5230 : Used 1 time 0
+ Sort Area is  p_rr0_31 : 0 1 : 2563 5230 : Used 1 time 0
+ Sort Area is  p_rr0_37 : 0 0 : 2667 5230 : Used 1 time 0
+ Sort Area is  p_rr0_37 : 0 1 : 2563 5230 : Used 1 time 0
+ Sort Area is  p_rr0_b : 0 0 : 2667 5230 : Used 1 time 0
+ Sort Area is  p_rr0_b : 0 1 : 2563 5230 : Used 1 time 0
+ Sort Area is  ARG_3 : 0 0 : 2667 5182 : Used 1 time 0
+ Sort Area is  ARG_3 : 0 1 : 2515 5182 : Used 1 time 0
+ Sort Area is  ARG_15 : 0 0 : 2667 4494 : Used 1 time 0
+ Sort Area is  ARG_15 : 0 1 : 1827 4494 : Used 1 time 0
+ Sort Area is  ARG_1b : 0 0 : 2667 4494 : Used 1 time 0
+ Sort Area is  ARG_1b : 0 1 : 1827 4494 : Used 1 time 0
+ Sort Area is  ARG_21 : 0 0 : 2667 4494 : Used 1 time 0
+ Sort Area is  ARG_21 : 0 1 : 1827 4494 : Used 1 time 0
+ Sort Area is  ARG_27 : 0 0 : 2667 4494 : Used 1 time 0
+ Sort Area is  ARG_27 : 0 1 : 1827 4494 : Used 1 time 0
+ Sort Area is  ARG_2d : 0 0 : 2667 4494 : Used 1 time 0
+ Sort Area is  ARG_2d : 0 1 : 1827 4494 : Used 1 time 0
+ Sort Area is  ARG_33 : 0 0 : 2667 4494 : Used 1 time 0
+ Sort Area is  ARG_33 : 0 1 : 1827 4494 : Used 1 time 0
+ Sort Area is  ARG_e : 0 0 : 2667 4494 : Used 1 time 0
+ Sort Area is  ARG_e : 0 1 : 1827 4494 : Used 1 time 0
+ Sort Area is  f_cr0_38 : 0 0 : 1168 3023 : Used 1 time 0
+ Sort Area is  f_cr0_38 : 0 1 : 1855 3023 : Used 1 time 0
+ Sort Area is  f_ci0_3b : 0 0 : 741 741 : Used 1 time 0
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+DSP: Preliminary Mapping Report (see note below. The ' indicates corresponding REG is set)
++----------------+------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name     | DSP Mapping      | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++----------------+------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 29     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 46     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 29     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 46     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 29     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 46     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 29     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 46     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 29     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 46     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 29     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 46     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 29     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 46     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A2*B2            | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 15     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A2*B2            | 18     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17)+A2*B2 | 18     | 15     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_gpu  | (A:0x7ae1)*B2    | 11     | 16     | -      | -      | 48     | 1    | 0    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_gpu  | (PCIN>>17)+A*B2  | 14     | 11     | -      | -      | 48     | 0    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_gpu  | (A:0x11eb8)*B2   | 18     | 10     | -      | -      | 48     | 0    | 1    | -    | -    | -     | 0    | 0    | 
++----------------+------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+Note: The table above is a preliminary report that shows the DSPs inferred at the current stage of the synthesis flow. Some DSP may be reimplemented as non DSP primitives later in the synthesis flow. Multiple instantiated DSPs are reported only once.
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:26 ; elapsed = 00:00:27 . Memory (MB): peak = 2836.352 ; gain = 837.742 ; free physical = 240 ; free virtual = 8610
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:27 ; elapsed = 00:00:28 . Memory (MB): peak = 2862.352 ; gain = 863.742 ; free physical = 227 ; free virtual = 8544
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:29 ; elapsed = 00:00:30 . Memory (MB): peak = 2889.391 ; gain = 890.781 ; free physical = 256 ; free virtual = 8454
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:32 ; elapsed = 00:00:32 . Memory (MB): peak = 3054.203 ; gain = 1055.594 ; free physical = 249 ; free virtual = 7987
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:32 ; elapsed = 00:00:32 . Memory (MB): peak = 3054.203 ; gain = 1055.594 ; free physical = 249 ; free virtual = 7987
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:33 ; elapsed = 00:00:33 . Memory (MB): peak = 3054.203 ; gain = 1055.594 ; free physical = 246 ; free virtual = 7984
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:33 ; elapsed = 00:00:33 . Memory (MB): peak = 3054.203 ; gain = 1055.594 ; free physical = 246 ; free virtual = 7985
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:33 ; elapsed = 00:00:33 . Memory (MB): peak = 3054.203 ; gain = 1055.594 ; free physical = 245 ; free virtual = 7983
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:33 ; elapsed = 00:00:33 . Memory (MB): peak = 3054.203 ; gain = 1055.594 ; free physical = 243 ; free virtual = 7981
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+DSP Final Report (the ' indicates corresponding REG is set)
++----------------+-------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name     | DSP Mapping       | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++----------------+-------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|mandelbrot_gpu  | A'*B              | 10     | 15     | -      | -      | 48     | 1    | 0    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_gpu  | PCIN>>17+A*B'     | 2      | 10     | -      | -      | 48     | 0    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_gpu  | A*B'              | 17     | 9      | -      | -      | 48     | 0    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 30     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | PCIN>>17+A'*B'    | 30     | 18     | -      | -      | 29     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | PCIN>>17+A'*B'    | 17     | 18     | -      | -      | 46     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 30     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 30     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | PCIN>>17+A'*B'    | 30     | 18     | -      | -      | 29     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | PCIN>>17+A'*B'    | 17     | 18     | -      | -      | 46     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 30     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 30     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | PCIN>>17+A'*B'    | 30     | 18     | -      | -      | 29     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | PCIN>>17+A'*B'    | 17     | 18     | -      | -      | 46     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 30     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 30     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | PCIN>>17+A'*B'    | 30     | 18     | -      | -      | 29     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | PCIN>>17+A'*B'    | 17     | 18     | -      | -      | 46     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 30     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 30     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | PCIN>>17+A'*B'    | 30     | 18     | -      | -      | 29     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | PCIN>>17+A'*B'    | 17     | 18     | -      | -      | 46     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 30     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 30     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | PCIN>>17+A'*B'    | 30     | 18     | -      | -      | 29     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | PCIN>>17+A'*B'    | 17     | 18     | -      | -      | 46     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 30     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 30     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | PCIN>>17+A'*B'    | 30     | 18     | -      | -      | 29     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | PCIN>>17+A'*B'    | 17     | 18     | -      | -      | 46     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 30     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 30     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | PCIN>>17+A'*B'    | 30     | 18     | -      | -      | 29     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | PCIN>>17+A'*B'    | 17     | 18     | -      | -      | 46     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | A'*B'             | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 30     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
+|mandelbrot_lane | A'*B'             | 17     | 17     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 0    | 
+|mandelbrot_lane | (PCIN>>17+A'*B')' | 17     | 18     | -      | -      | 48     | 1    | 1    | -    | -    | -     | 0    | 1    | 
++----------------+-------------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+--------+------+
+|      |Cell    |Count |
++------+--------+------+
+|1     |BUFG    |     1|
+|2     |CARRY4  |   772|
+|3     |DSP48E1 |    99|
+|7     |LUT1    |    37|
+|8     |LUT2    |  3727|
+|9     |LUT3    |    61|
+|10    |LUT4    |    78|
+|11    |LUT5    |    75|
+|12    |LUT6    |   218|
+|13    |MUXF7   |    58|
+|14    |MUXF8   |    28|
+|15    |FDRE    |  2628|
+|16    |FDSE    |     8|
+|17    |IBUF    |     4|
+|18    |OBUF    |    63|
++------+--------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:33 ; elapsed = 00:00:33 . Memory (MB): peak = 3054.203 ; gain = 1055.594 ; free physical = 243 ; free virtual = 7981
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 124 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:31 ; elapsed = 00:00:32 . Memory (MB): peak = 3054.203 ; gain = 953.820 ; free physical = 241 ; free virtual = 7979
+Synthesis Optimization Complete : Time (s): cpu = 00:00:33 ; elapsed = 00:00:33 . Memory (MB): peak = 3054.211 ; gain = 1055.594 ; free physical = 241 ; free virtual = 7979
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00.04 ; elapsed = 00:00:00.04 . Memory (MB): peak = 3054.211 ; gain = 0.000 ; free physical = 373 ; free virtual = 8111
+INFO: [Netlist 29-17] Analyzing 957 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 3110.230 ; gain = 0.000 ; free physical = 368 ; free virtual = 8106
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Synth Design complete | Checksum: f05501b
 INFO: [Common 17-83] Releasing license: Synthesis
-8 Infos, 0 Warnings, 0 Critical Warnings and 7 Errors encountered.
-synth_design failed
-synth_design: Time (s): cpu = 00:00:10 ; elapsed = 00:00:10 . Memory (MB): peak = 2563.051 ; gain = 716.648 ; free physical = 191 ; free virtual = 9633
-INFO: [Common 17-2834] synth_design peak Physical Memory [PSS] (MB): overall = 1769.757; main = 1478.877; forked = 290.880
-INFO: [Common 17-2834] synth_design peak Virtual Memory [VSS] (MB): overall = 4209.738; main = 2563.047; forked = 1646.691
-ERROR: [Common 17-69] Command failed: Synthesis failed - please see the console or run log file for details
-INFO: [Common 17-206] Exiting Vivado at Thu Sep 17 16:42:40 2026...
+23 Infos, 100 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:40 ; elapsed = 00:00:38 . Memory (MB): peak = 3110.266 ; gain = 1264.516 ; free physical = 369 ; free virtual = 8107
+INFO: [Common 17-2834] synth_design peak Physical Memory [PSS] (MB): overall = 2045.172; main = 1978.370; forked = 283.001
+INFO: [Common 17-2834] synth_design peak Virtual Memory [VSS] (MB): overall = 4535.965; main = 3110.234; forked = 1646.570
+Write ShapeDB Complete: Time (s): cpu = 00:00:00.03 ; elapsed = 00:00:00.01 . Memory (MB): peak = 3134.242 ; gain = 0.000 ; free physical = 368 ; free virtual = 8108
+INFO: [Common 17-1381] The checkpoint '/home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/vivado_gui/mini_gpu.runs/synth_1/top_mandelbrot.dcp' has been generated.
+INFO: [Vivado 12-24828] Executing command : report_utilization -file top_mandelbrot_utilization_synth.rpt -pb top_mandelbrot_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Thu Sep 17 16:56:03 2026...

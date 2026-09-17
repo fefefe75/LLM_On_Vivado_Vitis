@@ -67,6 +67,7 @@ set_property webtalk.parent_dir /home/felixantoine/Documents/projet_vivado_llm/L
 set_property parent.project_path /home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/vivado_gui/mini_gpu.xpr [current_project]
 set_property default_lib xil_defaultlib [current_project]
 set_property target_language Verilog [current_project]
+set_property ip_output_repo /home/felixantoine/Documents/projet_vivado_llm/LLM_On_Vivado_Vitis/examples/07-mini-gpu-mandelbrot/vivado_gui/mini_gpu.cache/ip [current_project]
 set_property ip_cache_permissions {read write} [current_project]
 set_property generic {C_LANES=8 C_IMG_W=640 C_IMG_H=480 C_MAX_ITER=128} [current_fileset]
 OPTRACE "Creating in-memory project" END { }

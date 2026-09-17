@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="synth_1" LaunchPart="xc7z020clg400-1" LaunchTime="1789656142">
+<GenRun Id="synth_1" LaunchPart="xc7z020clg400-1" LaunchTime="1789656919">
+  <File Type="VDS-TIMINGSUMMARY" Name="top_mandelbrot_timing_summary_synth.rpt"/>
   <File Type="RDS-DCP" Name="top_mandelbrot.dcp"/>
+  <File Type="RDS-UTIL-PB" Name="top_mandelbrot_utilization_synth.pb"/>
+  <File Type="RDS-UTIL" Name="top_mandelbrot_utilization_synth.rpt"/>
+  <File Type="RDS-PROPCONSTRS" Name="top_mandelbrot_drc_synth.rpt"/>
   <File Type="RDS-RDS" Name="top_mandelbrot.vds"/>
   <File Type="REPORTS-TCL" Name="top_mandelbrot_reports.tcl"/>
+  <File Type="VDS-TIMING-PB" Name="top_mandelbrot_timing_summary_synth.pb"/>
   <File Type="PA-TCL" Name="top_mandelbrot.tcl"/>
-  <File Type="RDS-UTIL" Name="top_mandelbrot_utilization_synth.rpt"/>
-  <File Type="RDS-UTIL-PB" Name="top_mandelbrot_utilization_synth.pb"/>
   <FileSet Name="sources" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
     <Filter Type="Srcs"/>
     <File Path="$PPRDIR/../tb/mandelbrot_config.py">
