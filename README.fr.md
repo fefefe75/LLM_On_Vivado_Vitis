@@ -81,7 +81,8 @@ docs/                  la documentation de référence (index : docs/README.md)
   ├── 08-vitis.md             xsct (≤2023.1) vs `vitis -s` (≥2023.2), XSA, boot
   ├── 10-troubleshooting.md   catalogue d'erreurs Vivado RÉELLES → correctif
   ├── 11-agent-workflow.md    la boucle de travail imposée à un agent
-  └── _research/              notes de recherche brutes, sources citées
+  ├── _research/              notes de recherche brutes, sources citées
+  └── demo/                   une vraie session d'agent enregistrée : GIF + .cast + script
 templates/             scripts Tcl · Makefiles cocotb + helpers · squelettes VHDL
                        contraintes · squelette de projet avec Makefile
 examples/              01 compteur · 02 ALU · 03 FIFO · 04 testbench VHDL pur (XSim)
@@ -89,6 +90,49 @@ examples/              01 compteur · 02 ALU · 03 FIFO · 04 testbench VHDL pur
 mcp/                   le serveur MCP (Python), configs clients, ses propres tests
 scripts/               check_tcl.py (valide tous les scripts Tcl), utilitaires
 ```
+
+## Version
+
+Langue principale : l'anglais, avec les miroirs français conservés à côté (`README.fr.md`,
+`mcp/README.fr.md`, `examples/07-mini-gpu-mandelbrot/README.fr.md`).
+État de la traduction : les documents de vitrine (ce fichier, `README.md`, `AGENTS.md`,
+`docs/README.md`, `mcp/README.md`, `examples/07/README.md`, `prompts/quickref.md`,
+`prompts/recipes.md`) sont en anglais ; `docs/01`→`11`, `CONTRIBUTING.md`, les README des
+exemples, les `skills/*/SKILL.md`, `templates/` et les docstrings/messages du serveur MCP
+(`mcp/vivado_mcp/*.py`, ~171 lignes) sont encore en français. `docs/README.md` tient
+l'état fichier par fichier plutôt qu'une liste figée ici.
+
+**v1.0** — première version considérée comme utilisable telle quelle (`git tag -l`).
+État vérifié au moment du tag :
+
+| Élément | État |
+|---|---|
+| Exemples 01 → 07 | tous exécutés ; `examples/07` (mini-GPU SIMT) vérifie en plus 6 configurations mesurées |
+| Serveur MCP | 52 tests passent (`cd mcp && python -m pytest -q`) |
+| Scripts Tcl | validés sans Vivado (`python3 scripts/check_tcl.py`) et exécutés avec Vivado 2025.2 |
+| Vivado / Vitis | flux complets réellement exécutés (synthèse → bitstream → XSA ; `vitis -s`) |
+| Tout rejouer | `bash scripts/verify_all.sh` |
+
+Ce qui n'est **pas** couvert, et qui est écrit noir sur blanc dans les docs : la
+programmation JTAG (aucune carte), le flux Vitis de bout en bout sur cible Zynq, et un
+design en violation de timing.
+
+Rejoué depuis sur la machine de référence : `bash scripts/verify_all.sh` → **9 OK /
+0 ECHEC / 4 IGNORE**, à condition de mettre `cocotb-config` et le GHDL du démarrage
+rapide dans le `PATH` (le `ghdl` installé dans `/usr/bin` refuse les surcharges de
+génériques à l'élaboration et fait échouer `examples/07`).
+
+## Voir tourner — une vraie session, pas une maquette
+
+![Un agent pilote Vivado et cocotb via le serveur MCP](docs/demo/agent-loop.gif)
+
+`docs/demo/agent-loop.gif` est un **enregistrement réel** : asciinema sur la machine de
+référence, rejoué en GIF par `docs/demo/cast2gif.py` (seuls les temps morts sont
+compressés, le `.cast` brut est dans `docs/demo/`). Sur ce run, un agent, via le serveur
+MCP : cocotb `TESTS=3 PASS=3 FAIL=0`, puis
+`PROGRESS=100% STATUS=route_design Complete!` en 84,7 s, 0 erreur dans le log, et
+**WNS = 7.915 ns** relu par `report_summary`. Le workspace est un dossier temporaire,
+jamais ce dépôt ; le pilote (`docs/demo/agent_loop_demo.py`) est versionné tel quel.
 
 ## Politique de vérification de ce dépôt
 
