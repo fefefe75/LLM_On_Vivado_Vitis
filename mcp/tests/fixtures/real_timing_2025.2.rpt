@@ -1,0 +1,145 @@
+# Fixture REELLE : extraite d'une execution de Vivado v2025.2 (lin64) sur Fedora.
+# Design : compteur 24 bits + 4 sorties LED, partie xc7z020clg400-1, horloge 100 MHz.
+# Extraite le 2026-09-17, entete (date/host/chemins) retiree. Ne pas editer a la main :
+# ces fichiers servent de reference a tests/test_reports.py.
+
+| Design Timing Summary
+| ---------------------
+------------------------------------------------------------------------------------------------
+
+    WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
+    -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
+      7.087        0.000                      0                   24        0.213        0.000                      0                   24        4.500        0.000                       0                    25  
+
+
+All user specified timing constraints are met.
+
+
+------------------------------------------------------------------------------------------------
+| Clock Summary
+| -------------
+------------------------------------------------------------------------------------------------
+
+Clock    Waveform(ns)       Period(ns)      Frequency(MHz)
+-----    ------------       ----------      --------------
+sys_clk  {0.000 5.000}      10.000          100.000         
+
+
+------------------------------------------------------------------------------------------------
+| Intra Clock Table
+| -----------------
+------------------------------------------------------------------------------------------------
+
+Clock             WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
+-----             -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
+sys_clk             7.087        0.000                      0                   24        0.213        0.000                      0                   24        4.500        0.000                       0                    25  
+
+
+------------------------------------------------------------------------------------------------
+| Inter Clock Table
+| -----------------
+------------------------------------------------------------------------------------------------
+
+From Clock    To Clock          WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints  
+----------    --------          -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------  
+
+
+------------------------------------------------------------------------------------------------
+| Other Path Groups Table
+| -----------------------
+------------------------------------------------------------------------------------------------
+
+Path Group    From Clock    To Clock          WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints  
+----------    ----------    --------          -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------  
+
+
+------------------------------------------------------------------------------------------------
+| Timing Details
+| --------------
+------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------
+From Clock:  sys_clk
+  To Clock:  sys_clk
+
+Setup :            0  Failing Endpoints,  Worst Slack        7.087ns,  Total Violation        0.000ns
+Hold  :            0  Failing Endpoints,  Worst Slack        0.213ns,  Total Violation        0.000ns
+PW    :            0  Failing Endpoints,  Worst Slack        4.500ns,  Total Violation        0.000ns
+---------------------------------------------------------------------------------------------------
+
+
+Max Delay Paths
+--------------------------------------------------------------------------------------
+Slack (MET) :             7.087ns  (required time - arrival time)
+  Source:                 s_count_reg[1]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            s_count_reg[21]/D
+                            (rising edge-triggered cell FDRE clocked by sys_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             sys_clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (sys_clk rise@10.000ns - sys_clk rise@0.000ns)
+  Data Path Delay:        2.809ns  (logic 1.940ns (69.064%)  route 0.869ns (30.936%))
+  Logic Levels:           6  (CARRY4=6)
+  Clock Path Skew:        -0.145ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.128ns = ( 12.128 - 10.000 ) 
+    Source Clock Delay      (SCD):    2.456ns
+    Clock Pessimism Removal (CPR):    0.184ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk rise edge)    0.000     0.000 r  
+                                                      0.000     0.000 r  i_clk (IN)
+                         net (fo=0)                   0.000     0.000    i_clk
+                         IBUF (Prop_ibuf_I_O)         0.972     0.972 r  i_clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.800     1.771    i_clk_IBUF
+                         BUFG (Prop_bufg_I_O)         0.101     1.872 r  i_clk_IBUF_BUFG_inst/O
+                         net (fo=24, unplaced)        0.584     2.456    i_clk_IBUF_BUFG
+                         FDRE                                         r  s_count_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.478     2.934 r  s_count_reg[1]/Q
+                         net (fo=1, unplaced)         0.860     3.794    s_count_reg_n_0_[1]
+                         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.657     4.451 r  s_count_reg[0]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.009     4.460    s_count_reg[0]_i_1_n_0
+                         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.117     4.577 r  s_count_reg[4]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.000     4.577    s_count_reg[4]_i_1_n_0
+                         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.117     4.694 r  s_count_reg[8]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.000     4.694    s_count_reg[8]_i_1_n_0
+                         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.117     4.811 r  s_count_reg[12]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.000     4.811    s_count_reg[12]_i_1_n_0
+                         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.117     4.928 r  s_count_reg[16]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.000     4.928    s_count_reg[16]_i_1_n_0
+                         CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.337     5.265 r  s_count_reg[20]_i_1/O[1]
+                         net (fo=1, unplaced)         0.000     5.265    s_count_reg[20]_i_1_n_6
+                         FDRE                                         r  s_count_reg[21]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk rise edge)   10.000    10.000 r  
+                                                      0.000    10.000 r  i_clk (IN)
+                         net (fo=0)                   0.000    10.000    i_clk
+                         IBUF (Prop_ibuf_I_O)         0.838    10.838 r  i_clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.760    11.598    i_clk_IBUF
+                         BUFG (Prop_bufg_I_O)         0.091    11.689 r  i_clk_IBUF_BUFG_inst/O
+                         net (fo=24, unplaced)        0.439    12.128    i_clk_IBUF_BUFG
+                         FDRE                                         r  s_count_reg[21]/C
+                         clock pessimism              0.184    12.311    
+                         clock uncertainty           -0.035    12.276    
+                         FDRE (Setup_fdre_C_D)        0.076    12.352    s_count_reg[21]
+  -------------------------------------------------------------------
+                         required time                         12.352    
+                         arrival time                          -5.265    
+  -------------------------------------------------------------------
+                         slack                                  7.087    
+
+

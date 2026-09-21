@@ -72,3 +72,10 @@ venv/
 *.swp
 .DS_Store
 Thumbs.db
+
+# --- exception : fixtures de test reelles -----------------------------------
+# Les regles *.log et *.rpt ci-dessus excluaient aussi mcp/tests/fixtures/
+# (rapports Vivado 2025.2 authentiques utilises par mcp/tests/test_reports.py).
+# Ils sont versionnes volontairement : sans eux les 4 tests de test_reports.py
+# echouent chez toute personne qui clone le depot.
+!mcp/tests/fixtures/**
