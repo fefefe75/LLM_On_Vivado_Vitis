@@ -1,0 +1,22 @@
+{
+  "_comment": "Cline (VS Code): copy into the Cline MCP settings file, ~/.config/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json (Linux), then reload the Cline panel. The server is stdio only.",
+  "mcpServers": {
+    "vivado-vitis": {
+      "command": "/path/to/venv/bin/python",
+      "args": [
+        "-m",
+        "vivado_mcp",
+        "--workspace",
+        "/path/to/your/fpga/project",
+        "--tool-root",
+        "/tools/Xilinx"
+      ],
+      "env": {
+        "PYTHONPATH": "/path/to/LLM_On_Vivado_Vitis/mcp",
+        "FPGA_MCP_TIMEOUT": "3600"
+      },
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}

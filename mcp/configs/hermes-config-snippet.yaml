@@ -1,18 +1,18 @@
-# Extrait a ajouter dans ~/.hermes/config.yaml (profil courant)
+# Snippet to add to ~/.hermes/config.yaml (current profile)
 #
-# Verifie sur la cle reelle utilisee par Hermes : `mcp_servers` (voir la config
-# d'exemple du projet : ~/.hermes/config.yaml). Un serveur stdio se declare avec
-# command/args/env ; `enabled: true` le charge au demarrage de la session.
+# Verified against the key Hermes actually uses: `mcp_servers` (see the example
+# config shipped with the project: ~/.hermes/config.yaml). A stdio server is
+# declared with command/args/env; `enabled: true` loads it when a session starts.
 mcp_servers:
   vivado-vitis:
-    command: /chemin/vers/venv/bin/python
+    command: /path/to/venv/bin/python
     args:
       - "-m"
       - "vivado_mcp"
       - "--workspace"
-      - "/home/utilisateur/mon_projet_fpga"
+      - "/path/to/your/fpga/project"
     env:
-      PYTHONPATH: /chemin/vers/LLM_On_Vivado_Vitis/mcp
+      PYTHONPATH: /path/to/LLM_On_Vivado_Vitis/mcp
       FPGA_MCP_TOOL_ROOT: /tools/Xilinx
       FPGA_MCP_TIMEOUT: "3600"
     enabled: true

@@ -128,7 +128,7 @@ faites pas entièrement confiance :
 | VS Code / Copilot | `configs/vscode-mcp.json` |
 | Cline | `configs/cline_mcp_settings.json` |
 
-Remplacez les chemins (`/chemin/vers/venv/bin/python`, `PYTHONPATH`, `--workspace`).
+Remplacez les chemins (`/path/to/venv/bin/python`, `PYTHONPATH`, `--workspace`) — les fichiers de `configs/` sont en anglais, ce sont des artefacts à copier.
 Un LLM **sans** client MCP peut quand même travailler : les scripts Tcl des
 `templates/vivado/` sont faits pour être exécutés à la main.
 

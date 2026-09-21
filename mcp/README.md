@@ -125,7 +125,7 @@ simulator — no better, no worse. If you point a model you do not fully trust a
 | VS Code / Copilot | `configs/vscode-mcp.json` |
 | Cline | `configs/cline_mcp_settings.json` |
 
-Replace the paths (`/chemin/vers/venv/bin/python`, `PYTHONPATH`, `--workspace`).
+Replace the paths (`/path/to/venv/bin/python`, `PYTHONPATH`, `--workspace`).
 An LLM **without** an MCP client can still work: the Tcl scripts in
 `templates/vivado/` are made to be run by hand.
 
