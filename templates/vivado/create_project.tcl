@@ -65,17 +65,17 @@ if {[catch {
     }
     if {[llength $hdl] > 0} {
         add_files -fileset sources_1 -norecurse $hdl
-        puts "== [llength $hdl] fichier(s) HDL ajoute(s)"
+        puts "== [llength $hdl] HDL file(s) added"
     } else {
-        puts "ATTENTION: aucun fichier HDL trouve dans rtl/"
+        puts "WARNING: no HDL file found in rtl/"
     }
 
     set xdc [collect_sources [file join $root constraints] xdc]
     if {[llength $xdc] > 0} {
         add_files -fileset constrs_1 -norecurse $xdc
-        puts "== [llength $xdc] contrainte(s) XDC ajoutee(s)"
+        puts "== [llength $xdc] XDC constraint(s) added"
     } else {
-        puts "ATTENTION: aucune contrainte dans constraints/ (l'implementation peut passer, pas le bitstream)"
+        puts "WARNING: no constraint in constraints/ (implementation may still run, the bitstream will not)"
     }
 
     # --- top et ordre de compilation ---------------------------------------
@@ -87,9 +87,9 @@ if {[catch {
         file mkdir [file join $root $d]
     }
 
-    puts "== projet cree : $xpr.xpr"
+    puts "== project created: $xpr.xpr"
 
 } err]} {
-    puts stderr "ERROR: creation du projet impossible : $err"
+    puts stderr "ERROR: project creation failed: $err"
     exit 1
 }

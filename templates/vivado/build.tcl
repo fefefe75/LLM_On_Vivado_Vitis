@@ -38,19 +38,19 @@ proc run_or_reuse {run_name jobs reset_flag to_step} {
     set progress [get_property PROGRESS [get_runs $run_name]]
 
     if {$progress eq "100%" && !$reset_flag} {
-        puts "== $run_name : deja termine (PROGRESS=100%), reutilise tel quel"
+        puts "== $run_name : already complete (PROGRESS=100%), reused as is"
         return
     }
     if {$reset_flag || ($progress ne "" && $progress ne "0%")} {
-        puts "== reset de $run_name"
+        puts "== resetting $run_name"
         reset_run $run_name
     }
 
     if {$to_step ne ""} {
-        puts "== lancement de $run_name (-jobs $jobs) jusqu'a $to_step"
+        puts "== launching $run_name (-jobs $jobs) up to $to_step"
         launch_runs $run_name -to_step $to_step -jobs $jobs
     } else {
-        puts "== lancement de $run_name (-jobs $jobs)"
+        puts "== launching $run_name (-jobs $jobs)"
         launch_runs $run_name -jobs $jobs
     }
     wait_on_run $run_name
@@ -78,7 +78,7 @@ proc allow_unconstrained {root} {
     puts $fh "set_property SEVERITY \{Warning\} \[get_drc_checks UCIO-1\]"
     close $fh
     set_property STEPS.WRITE_BITSTREAM.TCL.PRE $hook [get_runs impl_1]
-    puts "== DRC NSTD-1/UCIO-1 abaissees a Warning (pre-hook : $hook)"
+    puts "== DRC NSTD-1/UCIO-1 lowered to Warning (pre-hook: $hook)"
 }
 
 set xpr       [get_arg $argv --xpr ""]
@@ -110,7 +110,7 @@ if {[catch {
     close_design
 
     if {$to eq "synthesis"} {
-        puts "== termine (synthese)"
+        puts "== done (synthesis)"
         exit 0
     }
 
@@ -127,7 +127,7 @@ if {[catch {
         }
     } e]} {
         set impl_error $e
-        puts "== ECHEC impl_1 : $e"
+        puts "== impl_1 FAILED: $e"
     }
 
     set wns 0.0
@@ -164,10 +164,10 @@ if {[catch {
     if {$wns < 0} {
         # Le bitstream existe mais le design ne tient pas la frequence : a dire
         # explicitement, jamais a masquer.
-        error "timing non respecte (WNS=$wns ns) : voir $reports/timing_summary.rpt"
+        error "timing not met (WNS=$wns ns): see $reports/timing_summary.rpt"
     }
 
-    puts "== termine"
+    puts "== done"
 
 } err]} {
     puts stderr "ERROR: $err"
