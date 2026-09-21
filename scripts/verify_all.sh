@@ -125,7 +125,7 @@ if [ $have_ghdl -eq 1 ] && [ $have_cocotb -eq 1 ]; then
     ( cd "$d/tb" && "$PY" run_tests.py --lanes 8 -w 48 -H 32 --max-iter 32 \
         > "$LOGDIR/07.log" 2>&1 )
     rc=$?
-    ligne "07 (mini-GPU)" "$(grep -a 'TESTS=' "$LOGDIR/07.log" | tail -1 | sed 's/^.*\*\*//; s/\*\*.*$//')"
+    ligne "07 (mini-GPU)" "$(grep -a 'TESTS=' "$LOGDIR/07.log" | tail -1 | sed 's/^ *//;s/  */ /g')"
     verifie "07-mini-gpu (test de correction)" "$rc"
 else
     ignore "07-mini-gpu" "ghdl ou cocotb absent"
