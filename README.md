@@ -81,7 +81,8 @@ docs/                  the reference material (see docs/README.md for the index)
   ├── 10-troubleshooting.md   catalogue of REAL Vivado error messages → fix
   ├── 11-agent-workflow.md    the loop an agent must follow
   ├── _research/              raw research notes with sources
-  └── demo/                   a real agent-loop recording: GIF + .cast + the script
+  └── demo/                   the MCP tool loop, recorded: GIF + .cast + the script
+                             (scripted client: real tool calls, no LLM in the loop)
 templates/             vivado/ tcl scripts · cocotb/ makefiles+helpers · vhdl/ skeletons
                        constraints/ · project/ (project skeleton + Makefile toolbox)
 examples/              01 counter · 02 ALU · 03 FIFO · 04 pure-VHDL testbench (XSim)
@@ -91,33 +92,43 @@ mcp/                   the MCP server (Python), client configs, its own test sui
 scripts/               check_tcl.py (validates every Tcl script), helpers
 ```
 
-## See it run — a real session, not a mock-up
+## See it run — the tool calls are real, and no model is in the loop
 
-![An agent driving Vivado and cocotb through the MCP server](docs/demo/agent-loop.gif)
+![A scripted MCP client driving Vivado and cocotb through the MCP server](docs/demo/mcp-tool-loop.gif)
 
-That GIF is a **real run**, recorded with `asciinema` on the reference machine
-(`docs/demo/agent-loop.cast` is the untouched recording; `docs/demo/cast2gif.py` replays
-it into a GIF — idle time is compressed, nothing else is edited). Over the MCP server,
-in one loop, the agent does this:
+Be precise about what that is, because it is easy to oversell: a **scripted MCP client**
+(`docs/demo/mcp_tool_loop.py`) calls the server over stdio in the order an agent is expected
+to follow — write the RTL, simulate it, synthesize it, read the timing report. **There is no
+LLM in it**: the sequence is fixed in the script and so is the counter's VHDL. What is real
+is everything the server does: every tool call, every result, every line of output, on a real
+Vivado 2025.2 and GHDL 6.0.0. Nothing is staged either (`docs/demo/mcp-tool-loop.cast` is the
+raw asciinema recording; `cast2gif.py` replays it into a GIF — idle time is compressed,
+nothing else is edited).
 
 | Step | Tool call | Result of that run |
 |---|---|---|
 | 1 | `env_info(deep=True)` | Vivado v2025.2, XSim v2025.2, GHDL 6.0.0, cocotb 2.0.1, make 4.4.1 |
 | 2–3 | `write_text_file` | an 8-bit counter (871 chars) + a 100 MHz `create_clock` XDC |
-| 4–6 | `cocotb_run` → `cocotb_results` | `TESTS=3 PASS=3 FAIL=0 ERRORS=0`, 1.1 s |
+| 4–6 | `cocotb_run` → `cocotb_results` | `TESTS=3 PASS=3 FAIL=0 ERRORS=0`, 1.0 s |
 | 7 | `vivado_run(create_project.tcl)` | project + sources + constraints, rc=0 |
-| 8 | `vivado_run(build.tcl --to implementation)` | `PROGRESS=100% STATUS=route_design Complete!`, 84.7 s |
+| 8 | `vivado_run(build.tcl --to implementation)` | `PROGRESS=100% STATUS=route_design Complete!`, 82.2 s |
 | 9 | `job_log(errors_only=True)` | 0 errors, 0 warnings |
 | 10 | `project_status` + `report_summary` | **WNS = 7.915 ns**, TNS 0.000, `timing_met=true` |
+
+That loop is exactly the one the server's `instructions` field asks an agent to walk, and
+having it as a script has a point: it can be replayed, timed and diffed on demand, with no
+model and no API key, which is what makes it a regression test rather than a demo. To watch a
+model decide its own calls instead, plug the server into your client — that part is your
+agent's job, not this repository's.
 
 Reproduce it (the workspace is a scratch directory, never this repository):
 
 ```bash
-python3 -m venv mcp/.venv && mcp/.venv/bin/pip install -r mcp/requirements.txt asciinema
+python3 -m venv mcp/.venv && mcp/.venv/bin/pip install -r mcp/requirements.txt asciinema pyte pillow
 mkdir -p /tmp/fpga_demo/rtl /tmp/fpga_demo/tb /tmp/fpga_demo/scripts
 cp templates/vivado/*.tcl          /tmp/fpga_demo/scripts/
 cp examples/01-counter-cocotb/tb/* /tmp/fpga_demo/tb/
-mcp/.venv/bin/python docs/demo/agent_loop_demo.py --workspace /tmp/fpga_demo
+mcp/.venv/bin/python docs/demo/mcp_tool_loop.py --workspace /tmp/fpga_demo
 ```
 
 Limits of this demo, said plainly: the design has **no pin assignment**, so the flow

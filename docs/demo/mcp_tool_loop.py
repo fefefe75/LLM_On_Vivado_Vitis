@@ -1,11 +1,19 @@
 #!/usr/bin/env python3
-"""A real agent loop: an LLM drives Vivado + cocotb through the MCP server.
+"""The MCP tool loop, replayed by a scripted client. No LLM in this run.
 
-Every line printed here comes from an actual MCP tool call (the server runs as a
-stdio subprocess, exactly as Hermes / Claude Desktop / VS Code would start it).
-Nothing is staged: if a tool fails, you see the failure.
+WHAT THIS IS: a plain MCP client that calls the server in the order an agent is
+expected to follow — write the RTL, simulate it, synthesize it, read the timing
+report. The sequence and the VHDL text are fixed in this file; nothing here decides
+anything. Every tool call and every line of output is real (the server runs as a
+stdio subprocess, exactly as Hermes / Claude Desktop / VS Code would start it): if
+a tool fails, you see the failure.
 
-Usage: python3 agent_loop_demo.py --workspace <dir> [--to implementation]
+WHAT THIS IS NOT: a recorded LLM session. No model picks the next call and no model
+reads the results back. To see that, connect the server to your agent and let it
+work; this script exists so the loop can be replayed, timed and diffed with no model
+involved.
+
+Usage: python3 mcp_tool_loop.py --workspace <dir> [--to implementation]
 """
 from __future__ import annotations
 
@@ -100,7 +108,9 @@ async def main() -> int:
         env=env,
     )
 
-    print(f"{C}agent -> Vivado/Vitis MCP server{R}   {D}(stdio, workspace = {ws}){R}")
+    print(f"{C}scripted MCP client -> Vivado/Vitis MCP server{R}  {D}(stdio, workspace = {ws}){R}")
+    print(f"{D}no model in this run: the calls below are the fixed loop an agent is expected to{R}")
+    print(f"{D}follow. Every tool call and every output line is real.{R}")
     async with Client(transport) as client:
         tools = sorted(t.name for t in await client.list_tools())
         line(f"tools exposed by the server: {len(tools)}")
@@ -118,7 +128,7 @@ async def main() -> int:
             version = (t.get("version") or "").split("|")[0].strip().replace("(lin64)", "").strip()
             line(f"{name:<14} {version[:44]}")
 
-        step(2, total, 'write_text_file("rtl/counter.vhd")', "the RTL, written by the agent")
+        step(2, total, 'write_text_file("rtl/counter.vhd")', "the RTL an agent would write")
         line(str(payload(await client.call_tool(
             "write_text_file", {"path": "rtl/counter.vhd", "content": COUNTER}))))
 
@@ -165,7 +175,7 @@ async def main() -> int:
                         "--allow-unconstrained", "1"],
             "timeout_s": 2400}))
         job_build = r["id"]
-        line(f"job {job_build} started, the agent polls it")
+        line(f"job {job_build} started, the client polls it (bounded waits)")
         r = payload(await client.call_tool("wait_for_job", {"job_id": job_build, "max_wait_s": 600}))
         j = r["job"]
         line(f"status={j['status']}  returncode={j['returncode']}  duration={j['duration_s']} s"
@@ -197,9 +207,8 @@ async def main() -> int:
             line(f"{w.get('slack_ns')} ns  {w.get('source')} -> {w.get('destination')}"
                  f"  ({w.get('logic_levels')} logic level(s))")
 
-        print(f"\n{G}== loop complete: the agent wrote the RTL, verified it in simulation,"
-              f" synthesized it{R}")
-        print(f"{G}   and read the timing report back. No human in the loop.{R}")
+        print(f"\n{G}== loop complete: write RTL -> simulate -> synthesize -> read the timing{R}")
+        print(f"{G}   report. The sequence is scripted; the tool calls and their outputs are not.{R}")
     return 0
 
 

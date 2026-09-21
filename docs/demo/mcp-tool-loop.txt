@@ -1,4 +1,6 @@
-agent -> Vivado/Vitis MCP server   (stdio, workspace = /tmp/fpga_demo)
+scripted MCP client -> Vivado/Vitis MCP server  (stdio, workspace = /tmp/fpga_demo)
+no model in this run: the calls below are the fixed loop an agent is expected to
+follow. Every tool call and every output line is real.
       tools exposed by the server: 18
       cocotb_results, cocotb_run, env_info, grep, job_cancel, job_list
       job_log, job_status, list_hw_targets, program_fpga, project_status, project_tree
@@ -11,17 +13,17 @@ agent -> Vivado/Vitis MCP server   (stdio, workspace = /tmp/fpga_demo)
       cocotb-config  2.0.1
       make           GNU Make 4.4.1
 
-[2/8] write_text_file("rtl/counter.vhd")  the RTL, written by the agent
+[2/8] write_text_file("rtl/counter.vhd")  the RTL an agent would write
       /tmp/fpga_demo/rtl/counter.vhd written (871 characters)
 
 [3/8] write_text_file("constraints/top.xdc")  1 clock, 100 MHz
       /tmp/fpga_demo/constraints/top.xdc written (133 characters)
 
 [4/8] cocotb_run("tb", sim="ghdl")  SIMULATION before any synthesis
-      job 20260921-101717-cocotb-ghdl-f1a5c2  (cocotb-ghdl)  -> running
+      job 20260921-111519-cocotb-ghdl-b1549e  (cocotb-ghdl)  -> running
 
-[5/8] wait_for_job("20260921-101717-cocotb-ghdl-f1a5c2")  bounded wait: it never blocks forever
-      status=ok  returncode=0  duration=1.1 s  (real wait 1.3 s)
+[5/8] wait_for_job("20260921-111519-cocotb-ghdl-b1549e")  bounded wait: it never blocks forever
+      status=ok  returncode=0  duration=1.0 s  (real wait 1.3 s)
 
 [6/8] cocotb_results("tb")  the verdict, per test
       PASSED  test_counter.test_comptage_et_gel   105.0 ns
@@ -33,8 +35,8 @@ agent -> Vivado/Vitis MCP server   (stdio, workspace = /tmp/fpga_demo)
       status=ok  returncode=0
 
 [8/8] vivado_run(build.tcl --to implementation)  synthesis, implementation, reports
-      job 20260921-101723-vivado-dd84a4 started, the agent polls it
-      status=ok  returncode=0  duration=84.7 s  (real wait 84.8 s)
+      job 20260921-111526-vivado-62c76b started, the client polls it (bounded waits)
+      status=ok  returncode=0  duration=82.2 s  (real wait 82.3 s)
 
 -- job_log(errors_only=True): what broke, if anything --
       errors: 0    warnings: 0
@@ -55,5 +57,5 @@ agent -> Vivado/Vitis MCP server   (stdio, workspace = /tmp/fpga_demo)
       7.915 ns  s_count_reg[5]/C -> s_count_reg[6]/D  (2 logic level(s))
       7.924 ns  s_count_reg[5]/C -> s_count_reg[7]/D  (2 logic level(s))
 
-== loop complete: the agent wrote the RTL, verified it in simulation, synthesized it
-   and read the timing report back. No human in the loop.
+== loop complete: write RTL -> simulate -> synthesize -> read the timing
+   report. The sequence is scripted; the tool calls and their outputs are not.

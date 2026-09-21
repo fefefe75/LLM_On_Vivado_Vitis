@@ -122,17 +122,44 @@ Rejoué depuis sur la machine de référence : `bash scripts/verify_all.sh` → 
 rapide dans le `PATH` (le `ghdl` installé dans `/usr/bin` refuse les surcharges de
 génériques à l'élaboration et fait échouer `examples/07`).
 
-## Voir tourner — une vraie session, pas une maquette
+## Voir tourner — les appels sont réels, et aucun modèle n'est dans la boucle
 
-![Un agent pilote Vivado et cocotb via le serveur MCP](docs/demo/agent-loop.gif)
+![Un client MCP scripté pilote Vivado et cocotb via le serveur MCP](docs/demo/mcp-tool-loop.gif)
 
-`docs/demo/agent-loop.gif` est un **enregistrement réel** : asciinema sur la machine de
-référence, rejoué en GIF par `docs/demo/cast2gif.py` (seuls les temps morts sont
-compressés, le `.cast` brut est dans `docs/demo/`). Sur ce run, un agent, via le serveur
-MCP : cocotb `TESTS=3 PASS=3 FAIL=0`, puis
-`PROGRESS=100% STATUS=route_design Complete!` en 84,7 s, 0 erreur dans le log, et
-**WNS = 7.915 ns** relu par `report_summary`. Le workspace est un dossier temporaire,
-jamais ce dépôt ; le pilote (`docs/demo/agent_loop_demo.py`) est versionné tel quel.
+Soyons précis sur ce que c'est, parce que c'est vite survendu : un **client MCP scripté**
+(`docs/demo/mcp_tool_loop.py`) appelle le serveur en stdio dans l'ordre qu'un agent est censé
+suivre — écrire le RTL, le simuler, le synthétiser, relire le rapport de timing. **Il n'y a
+aucun LLM dedans** : la séquence est figée dans le script, et le VHDL du compteur aussi. Ce
+qui est réel, c'est tout ce que fait le serveur : chaque appel d'outil, chaque résultat,
+chaque ligne de sortie, sur un vrai Vivado 2025.2 et GHDL 6.0.0. Rien n'est mis en scène non
+plus (`docs/demo/mcp-tool-loop.cast` est l'enregistrement asciinema brut ; `cast2gif.py` le
+rejoue en GIF — seuls les temps morts sont compressés, rien d'autre n'est retouché).
+
+| Étape | Appel d'outil | Résultat de ce run |
+|---|---|---|
+| 1 | `env_info(deep=True)` | Vivado v2025.2, XSim v2025.2, GHDL 6.0.0, cocotb 2.0.1, make 4.4.1 |
+| 2–3 | `write_text_file` | un compteur 8 bits (871 caractères) + un XDC `create_clock` 100 MHz |
+| 4–6 | `cocotb_run` → `cocotb_results` | `TESTS=3 PASS=3 FAIL=0 ERRORS=0`, 1,0 s |
+| 7 | `vivado_run(create_project.tcl)` | projet + sources + contraintes, rc=0 |
+| 8 | `vivado_run(build.tcl --to implementation)` | `PROGRESS=100% STATUS=route_design Complete!`, 82,2 s |
+| 9 | `job_log(errors_only=True)` | 0 erreur, 0 avertissement |
+| 10 | `project_status` + `report_summary` | **WNS = 7.915 ns**, TNS 0.000, `timing_met=true` |
+
+Cette boucle est exactement celle que le champ `instructions` du serveur demande à un agent de
+suivre, et l'avoir en script a un intérêt : elle se rejoue, se chronomètre et se diffe à la
+demande, sans modèle ni clé d'API — ce qui en fait un test de non-régression plutôt qu'une
+démo. Pour voir un modèle choisir lui-même ses appels, branche le serveur sur ton client :
+c'est le travail de ton agent, pas de ce dépôt.
+
+Pour reproduire (le workspace est un dossier temporaire, jamais ce dépôt) :
+
+```bash
+python3 -m venv mcp/.venv && mcp/.venv/bin/pip install -r mcp/requirements.txt asciinema
+mkdir -p /tmp/fpga_demo/rtl /tmp/fpga_demo/tb /tmp/fpga_demo/scripts
+cp templates/vivado/*.tcl          /tmp/fpga_demo/scripts/
+cp examples/01-counter-cocotb/tb/* /tmp/fpga_demo/tb/
+mcp/.venv/bin/python docs/demo/mcp_tool_loop.py --workspace /tmp/fpga_demo
+```
 
 ### Et le matériel lui-même : ce que rend le mini-GPU (exemple 07)
 
