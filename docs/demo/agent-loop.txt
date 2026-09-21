@@ -1,0 +1,59 @@
+agent -> Vivado/Vitis MCP server   (stdio, workspace = /tmp/fpga_demo)
+      tools exposed by the server: 18
+      cocotb_results, cocotb_run, env_info, grep, job_cancel, job_list
+      job_log, job_status, list_hw_targets, program_fpga, project_status, project_tree
+      read_text_file, report_summary, vitis_run, vivado_run, wait_for_job, write_text_file
+
+[1/8] env_info(deep=True)  what is really installed
+      vivado         vivado v2025.2 (64-bit)
+      xsim           Vivado Simulator v2025.2
+      ghdl           GHDL 6.0.0 (tarball) [Dunoon edition]
+      cocotb-config  2.0.1
+      make           GNU Make 4.4.1
+
+[2/8] write_text_file("rtl/counter.vhd")  the RTL, written by the agent
+      /tmp/fpga_demo/rtl/counter.vhd written (871 characters)
+
+[3/8] write_text_file("constraints/top.xdc")  1 clock, 100 MHz
+      /tmp/fpga_demo/constraints/top.xdc written (133 characters)
+
+[4/8] cocotb_run("tb", sim="ghdl")  SIMULATION before any synthesis
+      job 20260921-101717-cocotb-ghdl-f1a5c2  (cocotb-ghdl)  -> running
+
+[5/8] wait_for_job("20260921-101717-cocotb-ghdl-f1a5c2")  bounded wait: it never blocks forever
+      status=ok  returncode=0  duration=1.1 s  (real wait 1.3 s)
+
+[6/8] cocotb_results("tb")  the verdict, per test
+      PASSED  test_counter.test_comptage_et_gel   105.0 ns
+      PASSED  test_counter.test_reset_synchrone   85.0 ns
+      PASSED  test_counter.test_debordement   2585.0 ns
+      TESTS=3 PASS=3 FAIL=0 ERRORS=0   all_passed=True
+
+[7/8] vivado_run(scripts/create_project.tcl)  project, sources, constraints
+      status=ok  returncode=0
+
+[8/8] vivado_run(build.tcl --to implementation)  synthesis, implementation, reports
+      job 20260921-101723-vivado-dd84a4 started, the agent polls it
+      status=ok  returncode=0  duration=84.7 s  (real wait 84.8 s)
+
+-- job_log(errors_only=True): what broke, if anything --
+      errors: 0    warnings: 0
+      == impl_1 : PROGRESS=100% STATUS=route_design Complete!
+      == TIMING: WNS = 7.915 ns
+      == BITSTREAM:
+      == done
+
+-- project_status("prj"): where are the reports? (starts nothing) --
+      runs found: impl_1, synth_1
+      prj.runs/impl_1/counter_timing_summary_routed.rpt
+      reports/post_synth_timing.rpt
+      reports/timing_summary.rpt
+
+-- report_summary("prj/prj.runs/impl_1/counter_timing_summary_routed.rpt") --
+      parsed=True   WNS=7.915 ns   TNS=0.0 ns   WHS=0.163 ns
+      critical paths reported: 3   timing_met=True
+      7.915 ns  s_count_reg[5]/C -> s_count_reg[6]/D  (2 logic level(s))
+      7.924 ns  s_count_reg[5]/C -> s_count_reg[7]/D  (2 logic level(s))
+
+== loop complete: the agent wrote the RTL, verified it in simulation, synthesized it
+   and read the timing report back. No human in the loop.

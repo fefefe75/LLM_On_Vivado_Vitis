@@ -80,7 +80,8 @@ docs/                  the reference material (see docs/README.md for the index)
   ├── 08-vitis.md             xsct (≤2023.1) vs `vitis -s` (≥2023.2), XSA, boot
   ├── 10-troubleshooting.md   catalogue of REAL Vivado error messages → fix
   ├── 11-agent-workflow.md    the loop an agent must follow
-  └── _research/              raw research notes with sources
+  ├── _research/              raw research notes with sources
+  └── demo/                   a real agent-loop recording: GIF + .cast + the script
 templates/             vivado/ tcl scripts · cocotb/ makefiles+helpers · vhdl/ skeletons
                        constraints/ · project/ (project skeleton + Makefile toolbox)
 examples/              01 counter · 02 ALU · 03 FIFO · 04 pure-VHDL testbench (XSim)
@@ -90,22 +91,66 @@ mcp/                   the MCP server (Python), client configs, its own test sui
 scripts/               check_tcl.py (validates every Tcl script), helpers
 ```
 
+## See it run — a real session, not a mock-up
+
+![An agent driving Vivado and cocotb through the MCP server](docs/demo/agent-loop.gif)
+
+That GIF is a **real run**, recorded with `asciinema` on the reference machine
+(`docs/demo/agent-loop.cast` is the untouched recording; `docs/demo/cast2gif.py` replays
+it into a GIF — idle time is compressed, nothing else is edited). Over the MCP server,
+in one loop, the agent does this:
+
+| Step | Tool call | Result of that run |
+|---|---|---|
+| 1 | `env_info(deep=True)` | Vivado v2025.2, XSim v2025.2, GHDL 6.0.0, cocotb 2.0.1, make 4.4.1 |
+| 2–3 | `write_text_file` | an 8-bit counter (871 chars) + a 100 MHz `create_clock` XDC |
+| 4–6 | `cocotb_run` → `cocotb_results` | `TESTS=3 PASS=3 FAIL=0 ERRORS=0`, 1.1 s |
+| 7 | `vivado_run(create_project.tcl)` | project + sources + constraints, rc=0 |
+| 8 | `vivado_run(build.tcl --to implementation)` | `PROGRESS=100% STATUS=route_design Complete!`, 84.7 s |
+| 9 | `job_log(errors_only=True)` | 0 errors, 0 warnings |
+| 10 | `project_status` + `report_summary` | **WNS = 7.915 ns**, TNS 0.000, `timing_met=true` |
+
+Reproduce it (the workspace is a scratch directory, never this repository):
+
+```bash
+python3 -m venv mcp/.venv && mcp/.venv/bin/pip install -r mcp/requirements.txt asciinema
+mkdir -p /tmp/fpga_demo/rtl /tmp/fpga_demo/tb /tmp/fpga_demo/scripts
+cp templates/vivado/*.tcl          /tmp/fpga_demo/scripts/
+cp examples/01-counter-cocotb/tb/* /tmp/fpga_demo/tb/
+mcp/.venv/bin/python docs/demo/agent_loop_demo.py --workspace /tmp/fpga_demo
+```
+
+Limits of this demo, said plainly: the design has **no pin assignment**, so the flow
+stops at `--to implementation` (real post-route timing, no bitstream); the GIF is a
+*rendered* terminal (pyte + Pillow + ffmpeg), not a pixel capture of a desktop; and the
+module written is this repository's own counter — the smallest design whose timing
+report means anything.
+
 ## Version
 
-**v1.0** — première version considérée comme utilisable telle quelle (`git tag -l`).
-État vérifié au moment du tag :
+Primary language: English, with French mirrors kept alongside (`README.fr.md`,
+`mcp/README.fr.md`).
+Language status: the front-page documents (this README, README.fr.md, AGENTS.md,
+docs/README.md, mcp/README.md, `prompts/quickref.md`, `prompts/recipes.md`) are English;
+docs/01–11, CONTRIBUTING.md, the examples' READMEs, the `skills/*/SKILL.md` files and
+`templates/` are still being translated from French, as are the MCP server's Python
+docstrings and messages (`mcp/vivado_mcp/*.py`, ~171 lines) — translations in progress,
+and `docs/README.md` tracks the per-file state (which reference files are still French)
+rather than freezing a list here.
 
-| Élément | État |
+**v1.0** — first version considered usable as-is (`git tag -l`).
+State verified at tag time:
+
+| Item | State |
 |---|---|
-| Exemples 01 → 07 | tous exécutés ; `examples/07` (mini-GPU SIMT) vérifie en plus 6 configurations mesurées |
-| Serveur MCP | 52 tests passent (`cd mcp && python -m pytest -q`) |
-| Scripts Tcl | validés sans Vivado (`python3 scripts/check_tcl.py`) et exécutés avec Vivado 2025.2 |
-| Vivado / Vitis | flux complets réellement exécutés (synthèse → bitstream → XSA ; `vitis -s`) |
-| Tout rejouer | `bash scripts/verify_all.sh` |
+| Examples 01 → 07 | all executed; `examples/07` (mini-GPU SIMT) additionally verifies 6 measured configurations |
+| MCP server | 52 tests pass (`cd mcp && python -m pytest -q`) |
+| Tcl scripts | validated without Vivado (`python3 scripts/check_tcl.py`) and executed with Vivado 2025.2 |
+| Vivado / Vitis | full flows actually executed (synthesis → bitstream → XSA; `vitis -s`) |
+| Replay everything | `bash scripts/verify_all.sh` |
 
-Ce qui n'est **pas** couvert et qui est écrit noir sur blanc dans les docs : la
-programmation JTAG (aucune carte), le flux Vitis de bout en bout sur cible Zynq, et un
-design en violation de timing.
+What is **not** covered, and is written plainly in the docs: JTAG programming (no board),
+the end-to-end Vitis flow on a Zynq target, and a timing-violating design.
 
 ## Verification policy of this repository
 
