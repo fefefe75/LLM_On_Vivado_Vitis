@@ -68,7 +68,7 @@ def test_project_tree_ignores_build_dirs(tools: FpgaTools) -> None:
 
 
 def test_read_write_roundtrip(tools: FpgaTools) -> None:
-    assert "ecrit" in tools.write_text_file("rtl/nouveau.vhd", "entity nouveau is end entity;\n")
+    assert "written" in tools.write_text_file("rtl/nouveau.vhd", "entity nouveau is end entity;\n")
     assert "entity nouveau" in tools.read_text_file("rtl/nouveau.vhd")
 
 

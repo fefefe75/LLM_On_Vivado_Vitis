@@ -64,6 +64,9 @@ webtalk*
 .Xil/
 
 # --- editeurs / OS ---
+.venv/
+venv/
+*.egg-info/
 .vscode/
 .idea/
 *.swp

@@ -96,7 +96,7 @@ class FpgaTools:
         tmp = target.with_suffix(target.suffix + ".tmp")
         tmp.write_text(content, encoding="utf-8")
         os.replace(tmp, target)
-        return f"{target} ecrit ({len(content)} caracteres)"
+        return f"{target} written ({len(content)} characters)"
 
     def grep(self, pattern: str, path: str = ".", glob: str = "*", max_hits: int = 100) -> str:
         """Recherche un motif (regex) dans les fichiers texte du projet."""

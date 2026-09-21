@@ -3,11 +3,12 @@
 Objectif : rendre au LLM du JSON exploitable au lieu de milliers de lignes de
 texte, tout en gardant la sortie brute disponible.
 
-IMPORTANT — honnêteté sur la vérification : les analyseurs ci-dessous ont été
-testés sur des rapports *synthétiques* reproduisant la mise en page des rapports
-Vivado (UG906 pour le timing, `report_utilization`) et sur de vrais `results.xml`
-de cocotb 2.0.1. Aucun Vivado n'a été utilisé pour produire ces fichiers pendant
-l'écriture de ce dépôt. Conséquence : chaque fonction renvoie `{"parsed": false,
+IMPORTANT — honnêteté sur la vérification : les analyseurs ci-dessous sont testés
+contre les fixtures **AUTHENTIQUES** de `tests/fixtures/` : un
+`report_timing_summary` et un `report_utilization` extraits d'une exécution
+réelle de Vivado v2025.2 (lin64) (compteur 24 bits + 4 LED, xc7z020clg400-1,
+horloge 100 MHz ; WNS 7.087 ns), un vrai log Vivado, et un vrai `results.xml` de
+cocotb 2.0.1. Conséquence : chaque fonction renvoie `{"parsed": false,
 "raw": ...}` avec le texte brut quand sa mise en page ne correspond pas, afin
 qu'une version future de Vivado dégrade proprement au lieu de mentir.
 """
