@@ -1,10 +1,10 @@
-# Serveur MCP Vivado / Vitis — le pont entre un LLM et les outils FPGA
+# Vivado / Vitis MCP server — the bridge between an LLM and the FPGA tools
 
-Un LLM ne peut pas piloter Vivado : il ne sait pas lancer un batch, suivre un run de
-synthèse de 40 minutes, ni retrouver la seule ligne `ERROR:` utile dans un log de
-30 000 lignes. Ce serveur MCP lui donne exactement ça, en 18 outils.
+An LLM cannot drive Vivado: it does not know how to launch a batch, follow a 40-minute
+synthesis run, or find the only useful `ERROR:` line in a 30 000-line log. This MCP
+server gives it exactly that, in 18 tools.
 
-Il est **générique** : aucun projet particulier en dur, tout se configure par le
+It is **generic**: no particular project is hard-coded, everything is configured through
 `--workspace`.
 
 ## Installation
@@ -12,122 +12,148 @@ Il est **générique** : aucun projet particulier en dur, tout se configure par 
 ```bash
 cd LLM_On_Vivado_Vitis/mcp
 python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt        # ou : .venv/bin/pip install -e .
+.venv/bin/pip install -r requirements.txt        # or: .venv/bin/pip install -e .
 .venv/bin/python -m vivado_mcp --workspace ~/mon_projet --selftest   # verification
 ```
 
-`--selftest` affiche ce qui est réellement installé (Vivado, Vitis, xsct, GHDL, cocotb…)
-sans ouvrir de transport. **Toujours commencer par là** quand quelque chose ne marche pas.
+`--selftest` prints what is actually installed (Vivado, Vitis, xsct, GHDL, cocotb…)
+without opening any transport. **Always start there** when something does not work.
 
-## Lancement
+## Launch
 
 ```bash
-# Mode standard (stdio) : c'est le client MCP qui lance le serveur
+# Standard mode (stdio): the MCP client launches the server
 .venv/bin/python -m vivado_mcp --workspace ~/mon_projet
 
-# Mode HTTP (serveur partagé) — A NE JAMAIS EXPOSER sans authentification
+# HTTP mode (shared server) — NEVER EXPOSE without authentication
 .venv/bin/python -m vivado_mcp --workspace ~/mon_projet --transport http --port 8000
 ```
 
-| Option | Effet |
+| Option | Effect |
 |---|---|
-| `--workspace` | racine du projet ; **toute** écriture y est confinée |
-| `--tool-root` | racine AMD (`/tools/Xilinx`) si Vivado/Vitis n'est pas dans le `PATH` |
-| `--transport` | `stdio` (défaut), `http`, `sse` |
-| `--selftest` | n'ouvre rien, affiche l'environnement détecté |
+| `--workspace` | project root; **every** write is confined to it |
+| `--tool-root` | AMD root (`/tools/Xilinx`) if Vivado/Vitis is not in the `PATH` |
+| `--transport` | `stdio` (default), `http`, `sse` |
+| `--selftest` | opens nothing, prints the detected environment |
 
-Variables d'environnement : `FPGA_MCP_WORKSPACE`, `FPGA_MCP_RUNS_DIR`, `FPGA_MCP_TOOL_ROOT`,
-`FPGA_MCP_TIMEOUT` (délai max par job, défaut 3600 s).
+Environment variables: `FPGA_MCP_WORKSPACE`, `FPGA_MCP_RUNS_DIR`, `FPGA_MCP_TOOL_ROOT`,
+`FPGA_MCP_TIMEOUT` (max delay per job, default 3600 s).
 
-## Outils exposés
+## Exposed tools
 
-| Outil | Quand l'utiliser |
+| Tool | When to use it |
 |---|---|
-| `project_tree` | **en premier** : comprendre la structure du projet |
-| `read_text_file` / `write_text_file` | lire un `.vhd`/`.xdc`, écrire un module ou un testbench |
-| `grep` | retrouver une entité, un port, un signal, une erreur |
-| `env_info` | savoir ce qui est réellement installé avant de prescrire un flux |
-| `vivado_run` | lancer un script Tcl Vivado en batch (synthèse, impl., bitstream, rapports) |
-| `vitis_run` | lancer `xsct` (≤ 2023.1) ou `vitis -s` (≥ 2023.2) |
-| `cocotb_run` | lancer un testbench cocotb (`make`) — la vérification avant synthèse |
-| `job_status` / `wait_for_job` / `job_list` | suivre un job (asynchrone, ne bloque jamais) |
-| `job_log` | **diagnostic** : erreurs et avertissements extraits, lignes filtrées |
-| `job_cancel` | arrêter un run parti en vrille |
-| `report_summary` | analyser un rapport : messages par code, WNS/TNS/WHS/THS, ressources |
-| `cocotb_results` | verdict PASS/FAIL par test (lecture de `results.xml`) |
-| `project_status` | état d'un projet : runs, timing, bitstreams (ne lance rien) |
-| `list_hw_targets` | cibles JTAG visibles |
-| `program_fpga` | programmer la carte — **action matérielle, `confirm=True` obligatoire** |
+| `project_tree` | **first**: understand the project structure |
+| `read_text_file` / `write_text_file` | read a `.vhd`/`.xdc`, write a module or a testbench |
+| `grep` | find an entity, a port, a signal, an error |
+| `env_info` | know what is actually installed before prescribing a flow |
+| `vivado_run` | run a Vivado Tcl script in batch (synthesis, impl., bitstream, reports) |
+| `vitis_run` | run `xsct` (≤ 2023.1) or `vitis -s` (≥ 2023.2) |
+| `cocotb_run` | run a cocotb testbench (`make`) — the verification before synthesis |
+| `job_status` / `wait_for_job` / `job_list` | follow a job (asynchronous, never blocks) |
+| `job_log` | **diagnostics**: errors and warnings extracted, filtered lines |
+| `job_cancel` | stop a run that has gone haywire |
+| `report_summary` | parse a report: messages by code, WNS/TNS/WHS/THS, resources |
+| `cocotb_results` | PASS/FAIL verdict per test (reads `results.xml`) |
+| `project_status` | state of a project: runs, timing, bitstreams (launches nothing) |
+| `list_hw_targets` | visible JTAG targets |
+| `program_fpga` | program the board — **hardware action, `confirm=True` mandatory** |
 
-## Boucle de travail attendue
+## Expected work loop
 
 ```
-env_info()                    -> quels outils sont là
+env_info()                    -> which tools are present
 project_tree()                -> structure
 write_text_file("rtl/x.vhd")  -> RTL
-cocotb_run("tb/x")            -> SIMULATION (obligatoire avant toute synthèse)
+cocotb_run("tb/x")            -> SIMULATION (mandatory before any synthesis)
 cocotb_results("tb/x")        -> PASS/FAIL
 vivado_run(script_path="scripts/build.tcl")
-job_status(id, wait_s=30)     -> en cours / fini
-job_log(id)                   -> erreurs seulement
+job_status(id, wait_s=30)     -> running / finished
+job_log(id)                   -> errors only
 report_summary(".../timing_summary.rpt") -> WNS/TNS
 ```
 
-Un run Vivado dure de quelques secondes à plusieurs heures : les outils ne bloquent
-jamais plus longtemps que demandé (`wait_s` borné). Le LLM sonde l'avancement.
+A Vivado run lasts from a few seconds to several hours: the tools never block longer
+than requested (bounded `wait_s`). The LLM polls the progress.
 
-## Sécurité — ce qui est appliqué dans le code
+## Security — what the code actually enforces
 
-| Barrière | Où | Comportement testé |
+| Barrier | Where | Tested behaviour |
 |---|---|---|
-| Confinement au workspace | `safety.resolve_in_workspace` | `../secret`, `/etc/passwd`, `~/x` et les liens symboliques sortants sont refusés (`tests/test_safety.py`) |
-| Liste blanche de binaires | `config.EDA_BINARIES` | `rm`, `curl`, ou un chemin absolu sont refusés ; jamais de `shell=True` |
-| Scripts Tcl générés | `safety.write_tcl` | nom nettoyé, écriture atomique dans `scripts/generated/` |
-| Sortie bornée | `jobs.JobManager` | log tronqué à 50 Mo, `tail` glissant de 400 lignes, 40 erreurs max remontées |
-| Arrêt propre | `jobs._kill` | `SIGTERM` sur le **groupe** de processus, puis `SIGKILL` après 8 s |
-| Actions matérielles | `tools.program_fpga` | refus explicite tant que `confirm=True` n'est pas fourni (et l'accord de l'utilisateur) |
-| Batch forcé | `config.base_env` | `DISPLAY=""` : aucune IHM ne s'ouvre derrière le dos de l'agent |
+| Workspace confinement | `safety.resolve_in_workspace` | `../secret`, `/etc/passwd`, `~/x` and symlinks pointing outside the workspace are refused (`tests/test_safety.py`) |
+| Binary allow-list | `config.EDA_BINARIES` | `rm`, `curl`, or an absolute path are refused; `shell=True` is never used |
+| Generated Tcl scripts | `safety.write_tcl` | sanitised file name, atomic write inside `scripts/generated/` |
+| Bounded output | `jobs.JobManager` | log truncated at 50 MB, sliding `tail` of 400 lines, at most 40 errors reported |
+| Clean shutdown | `jobs._kill` | `SIGTERM` on the process **group**, then `SIGKILL` after 8 s |
+| Hardware actions | `tools.program_fpga` | explicit refusal until `confirm=True` is provided (and the user agrees) |
+| Forced batch mode | `config.base_env` | `DISPLAY=""`: no GUI opens behind the agent's back |
 
-Le serveur ne donne **aucun** accès shell générique : c'est la seule façon d'être
-utilisable par un LLM sans transformer chaque prompt en exécution arbitraire.
+### What this does NOT protect against — read this before deploying
 
-## Configuration des clients
+Everything above is a **filesystem and binary allow-list**. It does not make the
+server a sandbox, and earlier versions of this file overstated that. The honest
+version:
 
-`configs/` contient des exemples prêts à copier :
+- **`vivado_run` and `vitis_run` execute arbitrary Tcl.** The server only decides
+  *which file* is handed to `vivado -source`; Tcl is a full language, so an
+  `exec rm -rf ~` or an `exec curl … | sh` inside the submitted script runs with
+  the server's privileges. Workspace confinement constrains the file tools, not
+  what the Tcl itself does.
+- **`write_text_file` followed by `cocotb_run` is arbitrary code execution.**
+  `cocotb_run` runs `make` inside a testbench directory; an agent that first writes
+  that directory's `Makefile` chooses what `make` executes.
+- **`vitis_run` / `xsct`** have the same property, plus JTAG access when a cable is
+  attached.
 
-| Client | Fichier |
+So the trust model is the same as for any MCP server that invokes a compiler or a
+simulator — no better, no worse. If you point a model you do not fully trust at it:
+
+1. run it in a **container** (or a dedicated VM / unprivileged user) with only the
+   project directory bind-mounted;
+2. never expose the `http` transport without authentication;
+3. keep the workspace outside your home directory, so a stray `exec rm -rf` cannot
+   take your documents with it.
+
+## Client configuration
+
+`configs/` contains ready-to-copy examples:
+
+| Client | File |
 |---|---|
 | Claude Desktop | `configs/claude_desktop_config.json` |
-| Hermes Agent | `configs/hermes-config-snippet.yaml` (`mcp_servers:` dans `~/.hermes/config.yaml`) |
+| Hermes Agent | `configs/hermes-config-snippet.yaml` (`mcp_servers:` in `~/.hermes/config.yaml`) |
 | VS Code / Copilot | `configs/vscode-mcp.json` |
 | Cline | `configs/cline_mcp_settings.json` |
 
-Remplacez les chemins (`/chemin/vers/venv/bin/python`, `PYTHONPATH`, `--workspace`).
-Un LLM **sans** client MCP peut quand même travailler : les scripts Tcl des
-`templates/vivado/` sont faits pour être exécutés à la main.
+Replace the paths (`/chemin/vers/venv/bin/python`, `PYTHONPATH`, `--workspace`).
+An LLM **without** an MCP client can still work: the Tcl scripts in
+`templates/vivado/` are made to be run by hand.
 
 ## Tests
 
 ```bash
 cd mcp
-python -m pytest -q          # 51 tests
+python -m pytest -q          # 52 tests
 ```
 
-Ce qui est réellement vérifié (pas des mocks) : lancement de vrais processus (`make`,
-`python3`), détection de succès/échec, extraction d'erreurs dans les logs, **timeout qui
-tue le processus**, annulation, persistance des `runs/*.json`, parsing d'un
-`results.xml` authentique de cocotb 2.0.1, sérialisation des chemins, et démarrage du
-serveur en **sous-processus stdio** avec un vrai client MCP (liste des outils + appel).
+What is actually verified (not mocks): launching real processes (`make`, `python3`),
+success/failure detection, error extraction from logs, **timeout that kills the
+process**, cancellation, persistence of `runs/*.json`, parsing of an authentic
+cocotb 2.0.1 `results.xml`, serialisation of paths, and starting the server as a
+**stdio subprocess** with a real MCP client (tool listing + call).
 
-## Limites assumées
+## Assumed limitations
 
-- **Aucun Vivado sur la machine d'écriture de ce dépôt** : les commandes Tcl ont été
-  validées sur la documentation AMD et par analyse syntaxique `tclsh`, pas par un run
-  réel. Les analyseurs de rapports Vivado dégradent proprement (`"parsed": false` +
-  texte brut) si la mise en page change : ils ne mentiront pas.
-- **cocotb ne supporte pas XSim** (vérifié dans cocotb 2.0.1) : en environnement
-  Vivado seul, utiliser un testbench VHDL (`examples/04-vhdl-testbench-xsim`) ou
-  simuler le même RTL avec GHDL.
-- Les jobs vivent en mémoire du serveur (les logs et un JSON par job restent sur
-  disque dans `.mcp_runs/`) : après un redémarrage, `job_list` repart de zéro.
-- Le serveur est **batch-only** : pas de session Vivado interactive, pas de GUI.
+- **Vivado 2025.2 / Vitis 2025.2 are installed on the reference machine**, and the
+  documented flows were run there (synthesis → bitstream, WNS 7.317 ns, a real
+  synthesis driven through `vivado_run` in rc=0 / 28.6 s). What remains unverified:
+  JTAG programming (no board), the complete end-to-end Vitis flow on a Zynq target,
+  and a design actually violating timing (only a synthetic fixture covers it). The
+  Vivado report parsers degrade cleanly (`"parsed": false` + raw text) if the layout
+  changes: they will not lie.
+- **cocotb does not support XSim** (verified in cocotb 2.0.1): in a Vivado-only
+  environment, use a VHDL testbench (`examples/04-vhdl-testbench-xsim`) or simulate
+  the same RTL with GHDL.
+- Jobs live in the server's memory (the logs and one JSON per job stay on disk in
+  `.mcp_runs/`): after a restart, `job_list` starts from zero.
+- The server is **batch-only**: no interactive Vivado session, no GUI.

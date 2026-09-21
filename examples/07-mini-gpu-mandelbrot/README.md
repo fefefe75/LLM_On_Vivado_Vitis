@@ -1,216 +1,218 @@
-# 07 — Mini-GPU : un accélérateur SIMT qui calcule la fractale de Mandelbrot
+# 07 — Mini-GPU: a SIMT accelerator that computes the Mandelbrot fractal
 
-Cet exemple construit un **petit GPU en VHDL** : un moteur SIMT à `C_LANES` voies qui
-calcule une image de Mandelbrot en parallèle, avec répartiteur de travail, divergence de
-voies et file de résultats. Il est **synthesizable sur la puce de ce dépôt**
-(`xc7z020clg400-1`) et **vérifié par simulation** contre un modèle de référence.
+*(French original kept in [`README.fr.md`](README.fr.md))*
 
-L'objectif n'est pas de battre un CPU (la comparaison honnête est plus bas, et le CPU
-gagne en débit brut) : c'est de montrer, avec des chiffres mesurés, **comment on
-parallélise vraiment** et ce que coûte cette parallélisation.
+This example builds a **small GPU in VHDL**: a SIMT engine with `C_LANES` lanes that
+computes a Mandelbrot image in parallel, with a work dispatcher, lane divergence and a
+result queue. It is **synthesizable on this repository's chip**
+(`xc7z020clg400-1`) and **verified by simulation** against a reference model.
+
+The goal is not to beat a CPU (the honest comparison is further down, and the CPU
+wins on raw throughput): it is to show, with measured numbers, **how you actually
+parallelize** and what that parallelization costs.
 
 ---
 
-## 1. Pourquoi Mandelbrot est le bon « kernel »
+## 1. Why Mandelbrot is the right "kernel"
 
-| Propriété | Conséquence pour le matériel |
+| Property | Consequence for the hardware |
 |---|---|
-| Chaque pixel est indépendant | aucun verrou, aucun partage de données entre voies |
-| Le travail par pixel est **variable** (1 à `C_MAX_ITER` itérations) | divergence : certaines voies finissent très vite, d'autres bloquent |
-| Le calcul est itératif et arithmétique (`z ← z² + c`) | se prête à un automate + multiplicateurs dédiés |
-| Le résultat est **vérifiable visuellement** | une seule image fausse se voit immédiatement |
+| Each pixel is independent | no lock, no data sharing between lanes |
+| The work per pixel is **variable** (1 to `C_MAX_ITER` iterations) | divergence: some lanes finish very fast, others stall |
+| The computation is iterative and arithmetic (`z ← z² + c`) | lends itself to a state machine + dedicated multipliers |
+| The result is **visually verifiable** | a single wrong image is immediately visible |
 
-## 2. Architecture (l'analogie GPU, terme par terme)
+## 2. Architecture (the GPU analogy, term by term)
 
 ```
-                        ┌──────────────── repartiteur ────────────────┐
-   pixel suivant ──────►│ balayage ligne par ligne, 1 point/cycle     │
-   (x, y)               │ gate : (voie libre) ET (creneau libre)      │
+                        ┌──────────────── dispatcher ─────────────────┐
+   next pixel ─────────►│ raster scan line by line, 1 point/cycle     │
+   (x, y)               │ gate: (lane free) AND (slot free)           │
                         └──────┬─────┬─────┬─────────┬────────────────┘
                                │     │     │         │     c = x0 + x*dx + i*(y0 + y*dy)
-                     ┌─────────▼─┐ ┌─▼───────┐ ┌───────▼─┐      (2 multiplicateurs PARTAGES)
-                     │  lane 0   │ │ lane 1  │ │ ... 15  │      1 automate z←z²+c par voie
-                     │ 3 mult.   │ │ 3 mult. │ │         │      3 cycles par iteration
+                     ┌─────────▼─┐ ┌─▼───────┐ ┌───────▼─┐      (2 SHARED multipliers)
+                     │  lane 0   │ │ lane 1  │ │ ... 15  │      1 z←z²+c state machine per lane
+                     │ 3 mult.   │ │ 3 mult. │ │         │      3 cycles per iteration
                      └─────┬─────┘ └────┬────┘ └────┬────┘
                            │            │           │  o_done + iterations
                         ┌──▼────────────▼───────────▼──┐
-                        │  file de resultats (2 slots  │  contre-pression : un résultat
-                        │  par voie, pointeurs)        │  ne peut jamais être écrasé
+                        │  result queue (2 slots       │  back-pressure: a result can
+                        │  per lane, pointers)         │  never be overwritten
                         └──────────────┬───────────────┘
                                        │  valid / ready
                               o_px_x, o_px_y, o_px_iter, o_px_escaped
 ```
 
-| Le vocabulaire GPU | Ici | Fichier |
+| The GPU vocabulary | Here | File |
 |---|---|---|
-| thread / CUDA core | une voie (`lane`) : un automate qui itère `z ← z² + c` | `rtl/mandelbrot_lane.vhd` |
-| distributeur de blocs | le répartiteur : donne un pixel à la première voie libre (balayage circulaire) | `rtl/mandelbrot_gpu.vhd` |
-| warp divergence | une voie dont le point reste dans l'ensemble tourne `C_MAX_ITER` fois et bloque sa place | mesurée, §4 |
-| unités partagées du SM | le générateur de `c` (2 multiplications pour **toutes** les voies) | `rtl/mandelbrot_gpu.vhd` |
-| file de sortie | 2 créneaux par voie avec contre-pression | `rtl/mandelbrot_gpu.vhd` |
-| registres de configuration | ports `o_cfg_*` : le design **déclare** ses paramètres | `rtl/mandelbrot_gpu.vhd` |
+| thread / CUDA core | a lane (`lane`): a state machine that iterates `z ← z² + c` | `rtl/mandelbrot_lane.vhd` |
+| block distributor | the dispatcher: gives a pixel to the first free lane (circular scan) | `rtl/mandelbrot_gpu.vhd` |
+| warp divergence | a lane whose point stays in the set runs `C_MAX_ITER` times and blocks its slot | measured, §4 |
+| shared units of the SM | the `c` generator (2 multiplications for **all** the lanes) | `rtl/mandelbrot_gpu.vhd` |
+| output queue | 2 slots per lane with back-pressure | `rtl/mandelbrot_gpu.vhd` |
+| configuration registers | `o_cfg_*` ports: the design **declares** its parameters | `rtl/mandelbrot_gpu.vhd` |
 
-L'arithmétique est en **virgule fixe Q26 sur 32 bits** (plage ±32, précision ~2·10⁻⁹,
-soit ~10⁷ fois plus fin que le pas d'un pixel dans la vue classique).
+The arithmetic is **Q26 fixed point on 32 bits** (range ±32, precision ~2·10⁻⁹,
+i.e. ~10⁷ times finer than one pixel step in the classic view).
 
-## 3. Ce qui est vérifié, et comment
+## 3. What is verified, and how
 
-Tout est reproductible avec les commandes données en §6.
+Everything is reproducible with the commands given in §6.
 
-| Ce qui est prouvé | Résultat mesuré |
+| What is proven | Measured result |
 |---|---|
-| Correction : 96×64 pixels comparés **exactement** au modèle Python | **6144 / 6144 pixels identiques**, 0 divergence |
-| Correction : 320×240 pixels (image pleine), 16 voies, 128 itérations | **76800 / 76800 pixels identiques** |
-| Débit réel du moteur (8 voies, 96×64, 64 itérations) | **50528 cycles** pour 6144 pixels = **8,22 cycles/pixel** |
-| Débit réel du moteur (16 voies, 320×240, 128 itérations) | **572057 cycles** pour 76800 pixels = **7,45 cycles/pixel** |
-| Efficacité parallèle (travail utile / voies × cycles) | **90,2 %** (8 voies) et **86,8 %** (16 voies) |
-| Contrôle croisé VHDL ↔ Python ↔ C | total d'itérations **233 737** dans les trois implémentations (image 128×96) |
-| Synthèse + placement-routage réels (Vivado 2025.2, `xc7z020clg400-1`) | voir §5 |
-| Image produite **par le RTL** (pas par un modèle logiciel) | `tb/images/mandelbrot_petite.png` |
+| Correctness: 96×64 pixels compared **exactly** to the Python model | **6144 / 6144 pixels identical**, 0 divergence |
+| Correctness: 320×240 pixels (full image), 16 lanes, 128 iterations | **76800 / 76800 pixels identical** |
+| Real throughput of the engine (8 lanes, 96×64, 64 iterations) | **50528 cycles** for 6144 pixels = **8.22 cycles/pixel** |
+| Real throughput of the engine (16 lanes, 320×240, 128 iterations) | **572057 cycles** for 76800 pixels = **7.45 cycles/pixel** |
+| Parallel efficiency (useful work / lanes × cycles) | **90.2 %** (8 lanes) and **86.8 %** (16 lanes) |
+| Cross-check VHDL ↔ Python ↔ C | total of **233 737** iterations in the three implementations (128×96 image) |
+| Real synthesis + place-and-route (Vivado 2025.2, `xc7z020clg400-1`) | see §5 |
+| Image produced **by the RTL** (not by a software model) | `tb/images/mandelbrot_petite.png` |
 
-> Transparence sur l'état des mesures : la mesure 320×240 a été interrompue *juste
-> après* la comparaison des pixels et l'affichage des métriques, mais *avant* l'écriture
-> de son image PNG et la ligne `passed` (arrêt volontaire de la machine pour libérer la
-> place à l'IHM Vivado). Aucune ligne d'écart de pixel n'a été produite. Le détail est
-> reproductible en une commande (§6). Les chiffres de synthèse du §5, eux, ont été obtenus
-> avant un recâblage purement structurel des sorties (signaux internes au lieu d'une
-> lecture de ports `out`, §8), mais **ce recâblage a été validé depuis** : compilation
-> Vivado réussie dans le projet de l'IHM (`synth_design completed successfully`, 32 s) et
-> re-simulation complète du banc (48×32, les deux tests `passed`).
+> Transparency about the state of the measurements: the 320×240 measurement was
+> interrupted *just after* the pixel comparison and the display of the metrics, but
+> *before* its PNG image and the `passed` line were written (the machine was stopped on
+> purpose to free up room for the Vivado GUI). No pixel-mismatch line was produced. The
+> detail is reproducible in one command (§6). The synthesis figures of §5, however, were
+> obtained before a purely structural rewiring of the outputs (internal signals instead of
+> reading the `out` ports, §8), but **that rewiring has been validated since**: successful
+> Vivado compilation in the GUI project (`synth_design completed successfully`, 32 s) and
+> a complete re-simulation of the bench (48×32, both tests `passed`).
 
-Le modèle de référence Python refait le **même** calcul entièrement en entier, opération
-par opération, débordements 32 bits compris — la comparaison est une égalité, pas une
-tolérance. Et le test lit la fenêtre du plan complexe et le format Q **sur les ports de
-configuration du design** : il vérifie donc l'arithmétique du RTL, pas une constante
-recopiée à la main.
+The Python reference model redoes the **same** computation entirely in integers,
+operation by operation, 32-bit overflows included — the comparison is an equality, not a
+tolerance. And the test reads the complex-plane window and the Q format **from the design's
+configuration ports**: it therefore verifies the arithmetic of the RTL, not a constant
+copied by hand.
 
-![image calculée par le RTL](tb/images/mandelbrot_petite.png)
+![image computed by the RTL](tb/images/mandelbrot_petite.png)
 
-*(image 96×64 obtenue en simulation, écrite par le banc de test — voir §6)*
+*(96×64 image obtained in simulation, written by the testbench — see §6)*
 
-## 4. Débit mesuré (et non espéré)
+## 4. Measured throughput (not hoped-for)
 
-Deux configurations mesurées sur la même vue classique, en comparant à chaque fois
-**tous** les pixels au modèle Python :
+Two configurations measured on the same classic view, comparing **all** the pixels to the
+Python model every time:
 
-| Image | Voies | Itérations max | Cycles du rendu | Cycles / pixel | Efficacité parallèle | Perte par divergence |
+| Image | Lanes | Max iterations | Render cycles | Cycles / pixel | Parallel efficiency | Loss from divergence |
 |---|---|---|---|---|---|---|
-| 48 × 32 (1536 px) | 8 | 32 | **8 271** | **5,38** | **85,2 %** | 14,8 % |
-| 96 × 64 (6144 px) | 8 | 64 | **50 528** | **8,22** | **90,2 %** | 9,8 % |
-| 320 × 240 (76800 px) | 16 | 128 | **572 057** | **7,45** | **86,8 %** | 13,2 % |
+| 48 × 32 (1536 px) | 8 | 32 | **8 271** | **5.38** | **85.2 %** | 14.8 % |
+| 96 × 64 (6144 px) | 8 | 64 | **50 528** | **8.22** | **90.2 %** | 9.8 % |
+| 320 × 240 (76800 px) | 16 | 128 | **572 057** | **7.45** | **86.8 %** | 13.2 % |
 
-Les trois lignes sont des mesures réelles. La première (48×32) est celle qui a été
-rejouée **après** le recâblage des sorties décrit au §8 : ses **deux tests passent**
-(`test_petite_image_egale_le_modele` et `test_image_complete_et_image_png`), donc le RTL
-tel qu'il est livré dans ce dépôt est bien vérifié par simulation, pas seulement analysé.
+The three rows are real measurements. The first one (48×32) is the one that was
+replayed **after** the output rewiring described in §8: both its tests pass
+(`test_petite_image_egale_le_modele` and `test_image_complete_et_image_png`), so the RTL
+as delivered in this repository is indeed verified by simulation, not merely analyzed.
 
-L'efficacité est calculée **uniquement à partir de la sortie du design** :
-`travail utile = Σ(3 × itérations + 2)` sur tous les pixels, comparé à
-`voies × cycles`. Elle mesure donc directement ce que coûte la divergence — sur cette
-image, **13 % du temps de calcul de 16 voies est perdu** parce que des points de
-l'ensemble immobilisent leur voie pendant que d'autres sont libérées. C'est le phénomène
-central d'un GPU, ici chiffré.
+Efficiency is computed **only from the design's output**:
+`useful work = Σ(3 × iterations + 2)` over all pixels, compared to
+`lanes × cycles`. It therefore measures directly what divergence costs — on this
+image, **13 % of the 16-lane compute time is lost** because points of the set tie up
+their lane while others are freed. That is the central phenomenon of a GPU, quantified
+here.
 
-### Mise à l'échelle : ce que coûte vraiment d'ajouter des voies
+### Scaling: what adding lanes really costs
 
-Balayage complet **mesuré** (image 48×32, 32 itérations) : chaque configuration est
-élaborée, simulée, ses cycles sont lus dans le compteur matériel `o_cycles`, et ses
-1536 pixels sont comparés au modèle Python.
+Full sweep, **measured** (48×32 image, 32 iterations): each configuration is elaborated,
+simulated, its cycles are read from the hardware counter `o_cycles`, and its
+1536 pixels are compared to the Python model.
 
-| Voies | Cycles du rendu | Cycles / pixel | Gain vs 1 voie | Efficacité parallèle |
+| Lanes | Render cycles | Cycles / pixel | Gain vs 1 lane | Parallel efficiency |
 |---|---|---|---|---|
-| 1 | 60 977 | 39,70 | 1,00× | **92,4 %** |
-| 2 | 30 915 | 20,13 | **1,97×** | 91,2 % |
-| 4 | 15 982 | 10,41 | **3,82×** | 88,2 % |
-| 8 | 8 270 | 5,38 | **7,37×** | 85,2 % |
-| 16 | 4 895 | 3,19 | **12,46×** | 72,0 % |
+| 1 | 60 977 | 39.70 | 1.00× | **92.4 %** |
+| 2 | 30 915 | 20.13 | **1.97×** | 91.2 % |
+| 4 | 15 982 | 10.41 | **3.82×** | 88.2 % |
+| 8 | 8 270 | 5.38 | **7.37×** | 85.2 % |
+| 16 | 4 895 | 3.19 | **12.46×** | 72.0 % |
 
-Ce que ce tableau enseigne, et qu'aucune formule ne remplace :
+What this table teaches, and no formula can replace:
 
-- jusqu'à 8 voies le gain suit presque le nombre de voies (7,37× pour 8) ;
-- **à 16 voies il décroche** (12,46× pour 16) et l'efficacité tombe à 72 % : c'est la
-  divergence (des pixels de l'ensemble immobilisent leur voie jusqu'à 32 itérations)
-  aggravée par la petite image (1536 pixels ÷ 16 voies = 96 pixels par voie, donc la
-  fin du rendu s'exécute à quelques voies seulement) ;
-- l'efficacité est **maximale à 1 voie** (92,4 %) : par construction, aucune divergence
-  entre voies. Ajouter des voies ne donne pas « ×N » gratuitement — c'est la leçon
-  centrale d'un GPU.
+- up to 8 lanes the gain almost follows the lane count (7.37× for 8);
+- **at 16 lanes it falls off** (12.46× for 16) and efficiency drops to 72 %: that is
+  divergence (pixels of the set tie up their lane for up to 32 iterations)
+  made worse by the small image (1536 pixels ÷ 16 lanes = 96 pixels per lane, so the
+  end of the render runs on only a few lanes);
+- efficiency is **highest at 1 lane** (92.4 %): by construction, no divergence
+  between lanes. Adding lanes does not give "×N" for free — that is the central
+  lesson of a GPU.
 
-Reproductible en une commande : `cd tb && make bench`.
+Reproducible in one command: `cd tb && make bench`.
 
-> Détail de mesure : la configuration à 1 voie affiche **60 977** cycles ici et
-> **60 978** dans le test de correction ci-dessus. L'écart d'un cycle vient de deux
-> méthodes différentes — le banc lit le compteur matériel `o_cycles` au moment du pulse
-> `o_done`, le test compte les fronts d'horloge jusqu'à ce même pulse. Les deux sont
-> justes ; je préfère l'écrire que de laisser croire à une incohérence.
+> Measurement detail: the 1-lane configuration shows **60 977** cycles here and
+> **60 978** in the correctness test above. The one-cycle difference comes from two
+> different methods — the bench reads the hardware counter `o_cycles` at the moment of the
+> `o_done` pulse, the test counts clock edges up to that same pulse. Both are
+> right; I would rather write it down than let it look like an inconsistency.
 
-> Correction d'une estimation que j'avais écrite ici : j'avais annoncé « GHDL simule ce
-> design à ~500 cycles/s, donc le balayage est long ». **C'était faux** — c'était mon
-> banc de test qui coûtait 0,6 ms de Python par cycle d'horloge. GHDL est en réalité
-> rapide (~120 000 cycles/s sur ce design : les 60 978 cycles de la configuration à
-> 1 voie se simulent en ~5 s). Le balayage complet a donc été exécuté, et la leçon
-> utile est celle-là : **mesurer l'outil, pas le supposer** — même quand on se trompe
-> soi-même (voir `skills/cocotb-testbench`, section « mesurer au lieu de poller »).
+> Correction of an estimate I had written here: I had announced "GHDL simulates this
+> design at ~500 cycles/s, so the sweep is long". **That was wrong** — it was my
+> testbench that cost 0.6 ms of Python per clock cycle. GHDL is in fact
+> fast (~120 000 cycles/s on this design: the 60 978 cycles of the
+> 1-lane configuration simulate in ~5 s). The full sweep was therefore executed, and the useful
+> lesson is this one: **measure the tool, do not assume it** — even when you get it wrong
+> yourself (see `skills/cocotb-testbench`, section "mesurer au lieu de poller").
 
-## 5. Coût matériel et fréquence (synthèse Vivado 2025.2)
+## 5. Hardware cost and frequency (Vivado 2025.2 synthesis)
 
-Synthèse **et** placement-routage réels, Vivado v2025.2, `xc7z020clg400-1`, image
-640×480, `max_iter=128`, horloge contrainte à 100 MHz (`constraints/timing.xdc`) :
+Real synthesis **and** place-and-route, Vivado v2025.2, `xc7z020clg400-1`, 640×480 image,
+`max_iter=128`, clock constrained to 100 MHz (`constraints/timing.xdc`):
 
-| Voies | LUT | Basc. | DSP48E1 | DSP / voie | WNS après P&R | F max estimée | Tient 100 MHz ? |
+| Lanes | LUT | FF | DSP48E1 | DSP / lane | WNS after P&R | Estimated F max | Meets 100 MHz? |
 |---|---|---|---|---|---|---|---|
-| 8 | 3604 (6,8 %) | 2745 (2,6 %) | 99 (45 %) | 12,4 | **+0,244 ns** | **102,5 MHz** | ✅ oui |
-| 16 | 7186 (13,5 %) | 5937 (5,6 %) | 195 (88,6 %) | 12,2 | **−1,583 ns** | **86,3 MHz** | ❌ non |
+| 8 | 3604 (6.8 %) | 2745 (2.6 %) | 99 (45 %) | 12.4 | **+0.244 ns** | **102.5 MHz** | ✅ yes |
+| 16 | 7186 (13.5 %) | 5937 (5.6 %) | 195 (88.6 %) | 12.2 | **−1.583 ns** | **86.3 MHz** | ❌ no |
 
-Trois enseignements tirés de ces chiffres, pas de la théorie :
+Three lessons drawn from these figures, not from theory:
 
-1. **~12 DSP48 par voie** : trois multiplications 32×32 par voie, chacune répartie sur
-   plusieurs DSP48E1. La puce n'en a que 220 → **18 voies maximum**. Le plafond n'est pas
-   la logique (13 % de LUT à 16 voies) mais les multiplicateurs.
-2. **Ajouter des voies coûte de la fréquence** : 8 voies tiennent 100 MHz, 16 voies non
-   (86 MHz). Le chemin critique est le multiplieur 32×32 non pipeliné, et le
-   répartiteur qui dessert 16 voies en allonge le fanout.
-3. **La comparaison avec une implémentation publiée sur la même puce** : `delhatch/Zedboard_Mandel`
-   place 9 moteurs en saturant les 220 DSP (≈ 24 DSP par moteur) ; ici 16 voies en
-   consomment 195 (≈ 12 par voie), soit **~2× plus économe par voie**. La contrepartie
-   est la fréquence (86 MHz contre 90 MHz annoncés là-bas) et un pipeline moins profond.
+1. **~12 DSP48 per lane**: three 32×32 multiplications per lane, each spread over
+   several DSP48E1. The chip has only 220 of them → **18 lanes maximum**. The ceiling is not
+   logic (13 % of the LUTs at 16 lanes) but the multipliers.
+2. **Adding lanes costs frequency**: 8 lanes meet 100 MHz, 16 lanes do not
+   (86 MHz). The critical path is the non-pipelined 32×32 multiplier, and the
+   dispatcher serving 16 lanes lengthens the fanout.
+3. **Comparison with a published implementation on the same chip**: `delhatch/Zedboard_Mandel`
+   fits 9 engines while saturating the 220 DSPs (≈ 24 DSP per engine); here 16 lanes
+   consume 195 (≈ 12 per lane), i.e. **~2× more economical per lane**. The trade-off
+   is frequency (86 MHz versus the 90 MHz announced there) and a shallower pipeline.
 
-Débit qui en découle : à 3 cycles par itération, une voie fait **0,33 itération par
-cycle**. 8 voies à 100 MHz → **267 Miter/s** ; 16 voies à 86 MHz → **458 Miter/s**.
+Throughput that follows from this: at 3 cycles per iteration, one lane does **0.33 iteration per
+cycle**. 8 lanes at 100 MHz → **267 Miter/s**; 16 lanes at 86 MHz → **458 Miter/s**.
 
-> Piste d'optimisation chiffrée, **non implémentée** : pipeliner les trois
-> multiplications (1 itération par cycle au lieu de 3) triplerait le débit par voie, soit
-> ~1,4 Giter/s à 16 voies — au prix de 3× plus de DSP, donc de moins de voies par puce.
-> C'est exactement l'arbitrage que fait un vrai GPU entre profondeur de pipeline et
-> nombre de cœurs.
+> Quantified optimization path, **not implemented**: pipelining the three
+> multiplications (1 iteration per cycle instead of 3) would triple the throughput per lane,
+> i.e. ~1.4 Giter/s at 16 lanes — at the price of 3× more DSPs, hence fewer lanes per chip.
+> That is exactly the trade-off a real GPU makes between pipeline depth and
+> number of cores.
 
-## 6. Comment lancer
+## 6. How to run
 
 ```bash
 export PATH=/tmp/ghdl_tool/bin:$HOME/Documents/mon_env/mon_env/bin:$PATH   # GHDL + cocotb
 
 cd tb
-make                                   # 96x64, 8 voies : test complet + image
-make bench                             # tableau d'accélération 1/2/4/8/16 voies
+make                                   # 96x64, 8 lanes: full test + image
+make bench                             # 1/2/4/8/16-lane speedup table
 
-# variantes (l'API cocotb runner passe les génériques VHDL) :
-python3 run_tests.py --lanes 16 -w 320 -H 240 --max-iter 128   # grande image
+# variants (the cocotb runner API passes the VHDL generics):
+python3 run_tests.py --lanes 16 -w 320 -H 240 --max-iter 128   # large image
 python3 run_tests.py --testcase test_petite_image_egale_le_modele
-python3 run_tests.py --waves                                   # traces .ghw
+python3 run_tests.py --waves                                   # .ghw waveforms
 
-# référence CPU (même algorithme, même format, un cœur) :
+# CPU reference (same algorithm, same format, one core):
 gcc -O2 -o baseline ../software/baseline_c.c && ./baseline 128 96 64
 
-# synthèse + placement-routage réels :
+# real synthesis + place-and-route:
 source ~/vivado/2025.2/Vivado/settings64.sh
 vivado -mode batch -source ../scripts/synth_vivado.tcl \
        -tclargs --part xc7z020clg400-1 --lanes 16
 ```
 
-## 7. Comparaison honnête avec un CPU
+## 7. Honest comparison with a CPU
 
-Le même algorithme, en C, optimisé `-O2`, **sur un seul cœur** de cette machine
-(i7-1360P) :
+The same algorithm, in C, optimized with `-O2`, **on a single core** of this machine
+(i7-1360P):
 
 ```
 image            : 128 x 96 (12288 pixels), max_iter=64
@@ -218,68 +220,68 @@ iterations       : 233737
 debit CPU        : 22.929 Mpixels/s      (436 Miter/s)
 ```
 
-Le FPGA, à 3 cycles par itération, fait **0,33 itération par cycle et par voie**. D'après
-les mesures de §5 :
+The FPGA, at 3 cycles per iteration, does **0.33 iteration per cycle and per lane**. From
+the measurements of §5:
 
-| | Itérations/s |
+| | Iterations/s |
 |---|---|
-| 1 cœur CPU (C, `-O2`) | **436 Miter/s** |
-| FPGA 8 voies @ 100 MHz | 267 Miter/s |
-| FPGA 16 voies @ 86 MHz | 458 Miter/s |
+| 1 CPU core (C, `-O2`) | **436 Miter/s** |
+| FPGA 8 lanes @ 100 MHz | 267 Miter/s |
+| FPGA 16 lanes @ 86 MHz | 458 Miter/s |
 
-Autrement dit : **il faut 16 voies pour égaler à peine un seul cœur de ce CPU**, qui en a
-douze. Sur ce noyau-là, le FPGA ne gagne pas — et le dire fait partie du travail.
+In other words: **it takes 16 lanes to barely match a single core of this CPU**, and it has
+twelve. On this kernel, the FPGA does not win — and saying so is part of the work.
 
-**Conclusion, sans enjolivure** : pour ce noyau arithmétique lourd et sans dépendances,
-un CPU moderne est un adversaire redoutable, et un petit FPGA ne le bat pas en débit
-brut. Ce que cet exemple démontre vraiment :
+**Conclusion, without embellishment**: for this heavy arithmetic kernel with no dependencies,
+a modern CPU is a formidable opponent, and a small FPGA does not beat it on raw
+throughput. What this example really demonstrates:
 
-1. la **structure SIMT** (voies, répartiteur, divergence) se construit proprement en VHDL ;
-2. on sait **mesurer** ce qu'elle donne (cycles/pixel, efficacité parallèle, coût par voie)
-   au lieu de l'espérer ;
-3. le plafond de la puce est identifié (220 DSP → 18 voies) et la piste d'optimisation
-   est chiffrée (pipeline → ×3 par voie) ;
-4. le FPGA reste gagnant là où il gagne toujours : latence déterministe, pas d'OS,
-   quelques watts, et le calcul peut être intégré au flux de données (ici la sortie est
-   déjà un flux `valid/ready` prêt à alimenter un affichage ou une DDR).
+1. the **SIMT structure** (lanes, dispatcher, divergence) can be built cleanly in VHDL;
+2. we know how to **measure** what it delivers (cycles/pixel, parallel efficiency, cost per lane)
+   instead of hoping for it;
+3. the ceiling of the chip is identified (220 DSP → 18 lanes) and the optimization path
+   is quantified (pipeline → ×3 per lane);
+4. the FPGA still wins where it always wins: deterministic latency, no OS,
+   a few watts, and the computation can be integrated into the data flow (here the output is
+   already a `valid/ready` stream ready to feed a display or a DDR).
 
-## 8. Pièges rencontrés — tous mesurés, pas théoriques
+## 8. Pitfalls encountered — all measured, not theoretical
 
-| Piège | Symptôme exact | Correction |
+| Pitfall | Exact symptom | Fix |
 |---|---|---|
-| Format Q trop juste | `bound check failure` sous GHDL : Q28 sur 32 bits porte ±8,0 et l'intermédiaire `2·zr·zi` atteint **pile** 8,0 au bord de la fuite | Q26 (±32) ; le format est passé en générique et **déclaré** par le design |
-| Lecture d'un port `out` dans l'architecture | `ERROR: [Synth 8-10557] cannot read from 'out' object 'o_px_valid'; use 'buffer' or 'inout' instead` — GHDL le refuse en `--std=93` mais l'accepte en `--std=08`, et **un projet Vivado lit les sources en VHDL-93 par défaut** : le fichier est rejeté à la synthèse | signaux internes (`s_px_valid`, `s_cycles`) + câblage concurrent des ports : le design s'analyse alors en **VHDL-93 comme en VHDL-2008** (vérifié sur les deux) |
-| Entier signé multiplié par un littéral | `bound check failure` sur `resize(zr*zi, 64) * 2` même pour de petites valeurs (reproduit en 10 lignes) | `shift_left(zr*zi, 1)` |
-| Addition avec un entier signé | `bound check failure` sur `unsigned + v_delta` : l'opérateur numeric_std attend un **NATURAL**, un delta négatif violé le sous-type | branches explicites (`+1`, `-1`, inchangé) |
-| Un seul créneau de résultat par voie | **351 pixels sur 6144 jamais émis**, simulation bloquée, `o_done` jamais armé : la voie repartait avant la collecte et écrasait le résultat (coordonnées fausses en prime) | 2 créneaux par voie + contre-pression sur l'émission |
-| Double distribution à une même voie (`C_LANES=1`) | **1536 pixels émis pour 768 calculés** : le répartiteur balaie la même voie à chaque cycle et lui confie un second pixel alors que la voie est encore `IDLE` — le pulse de départ, étant enregistré, n'agit qu'au front suivant, et ce second pixel n'est **jamais calculé** (simulation qui ne se termine plus, gel à exactement la moitié) | demande **maintenue** par voie (`s_req`) au lieu d'un pulse, effacée dès que la voie quitte `IDLE` : la distribution devient idempotente. Ne se manifeste qu'à 1 voie (le balayage revient sur une voie déjà occupée dès 2 voies) |
-| Lire un signal juste après le front | `Attempting settings a value during the ReadOnly phase` (écrire après `ReadOnly()`), et lecture décalée d'un cycle | testbench : lire sur le front **descendant** ; init : terminer sur un front, pas sur `ReadOnly` |
-| `to_integer` sur un `std_logic` | `no overloaded function found matching "to_integer"` | fonction de conversion explicite `f_bit_vers_int` |
-| Plage de port non localement statique | `unsigned(f_bits(C_IMG_W-1)-1 downto 0)` refusé (appel de fonction dans une plage) | largeurs passées en génériques (`C_XW`, `C_YW`) |
-| Runner cocotb + GHDL | `cannot find entity or configuration mandelbrot_gpu` : l'élaboration va dans `build_dir` mais la simulation s'exécute dans `test_dir` | `test_args=["--std=08", "--workdir=<build>", "-P<build>"]` |
-| Banc trop lent (0,6 ms/cycle) | 1 million de cycles simulés en 48 s : inutilisable | attendre `o_done.value_change` au lieu de poller chaque front (×1000) |
+| Q format too tight | `bound check failure` under GHDL: Q28 on 32 bits carries ±8.0 and the `2·zr·zi` intermediate reaches **exactly** 8.0 at the escape boundary | Q26 (±32); the format was moved into a generic and **declared** by the design |
+| Reading an `out` port inside the architecture | `ERROR: [Synth 8-10557] cannot read from 'out' object 'o_px_valid'; use 'buffer' or 'inout' instead` — GHDL refuses it under `--std=93` but accepts it under `--std=08`, and **a Vivado project reads the sources as VHDL-93 by default**: the file is rejected at synthesis | internal signals (`s_px_valid`, `s_cycles`) + concurrent wiring of the ports: the design then analyzes in **both VHDL-93 and VHDL-2008** (checked on both) |
+| Signed integer multiplied by a literal | `bound check failure` on `resize(zr*zi, 64) * 2` even for small values (reproduced in 10 lines) | `shift_left(zr*zi, 1)` |
+| Addition with a signed integer | `bound check failure` on `unsigned + v_delta`: the numeric_std operator expects a **NATURAL**, a negative delta violates the subtype | explicit branches (`+1`, `-1`, unchanged) |
+| A single result slot per lane | **351 pixels out of 6144 never emitted**, simulation stuck, `o_done` never asserted: the lane restarted before the collection and overwrote the result (with wrong coordinates as a bonus) | 2 slots per lane + back-pressure on the emit path |
+| Double dispatch to the same lane (`C_LANES=1`) | **1536 pixels emitted for 768 computed**: the dispatcher scans the same lane every cycle and hands it a second pixel while the lane is still `IDLE` — the start pulse, being registered, only acts on the next edge, and that second pixel is **never computed** (simulation that never ends, frozen at exactly half) | a **held** request per lane (`s_req`) instead of a pulse, cleared as soon as the lane leaves `IDLE`: dispatch becomes idempotent. Only shows up at 1 lane (from 2 lanes on, the scan comes back to an already busy lane) |
+| Reading a signal just after the edge | `Attempting settings a value during the ReadOnly phase` (writing after `ReadOnly()`), and a read shifted by one cycle | testbench: read on the **falling** edge; init: finish on an edge, not on `ReadOnly` |
+| `to_integer` on a `std_logic` | `no overloaded function found matching "to_integer"` | explicit conversion function `f_bit_vers_int` |
+| Port range not locally static | `unsigned(f_bits(C_IMG_W-1)-1 downto 0)` rejected (function call in a range) | widths passed as generics (`C_XW`, `C_YW`) |
+| cocotb + GHDL runner | `cannot find entity or configuration mandelbrot_gpu`: elaboration goes to `build_dir` but simulation runs in `test_dir` | `test_args=["--std=08", "--workdir=<build>", "-P<build>"]` |
+| Bench too slow (0.6 ms/cycle) | 1 million simulated cycles in 48 s: unusable | wait for `o_done.value_change` instead of polling every edge (×1000) |
 
-## 9. Ce qui n'est PAS vérifié
+## 9. What is NOT verified
 
-- **Aucune carte réelle** : le bitstream n'est pas généré (le top n'a pas de contraintes
-  de broches) ; seul le flux synthèse → placement-routage → timing est exécuté.
-- La fréquence annoncée en §5 vient du **pire chemin** après placement-routage, sans
-  contrainte d'horloge imposée : c'est une estimation d'implémentation, pas une mesure
-  sur silicium.
-- Un seul point de conception : 3 cycles par itération. Un pipeline plus profond
-  (1 itération/cycle par voie) n'a pas été tenté ; c'est la piste d'optimisation
-  évidente et elle coûterait plus de multiplicateurs.
-- La comparaison avec le CPU porte sur **un cœur** ; la version multi-thread du même C
-  n'a pas été mesurée (elle serait ~10× plus rapide sur cette machine).
+- **No real board**: the bitstream is not generated (the top has no pin
+  constraints); only the synthesis → place-and-route → timing flow is run.
+- The frequency announced in §5 comes from the **worst path** after place-and-route, with no
+  imposed clock constraint: it is an implementation estimate, not a measurement
+  on silicon.
+- A single design point: 3 cycles per iteration. A deeper pipeline
+  (1 iteration/cycle per lane) was not attempted; it is the obvious optimization path
+  and it would cost more multipliers.
+- The comparison with the CPU covers **one core**; the multi-threaded version of the same C
+  was not measured (it would be ~10× faster on this machine).
 
 ## 10. Sources
 
-- Architecture d'un GPU réel (voies, blocs, divergence) : `tiny-gpu`
-  (github.com/adam-maj/tiny-gpu), FGPU, « An SIMT-Architecture for FPGAs » (ACM TRETS).
-- Implémentations Mandelbrot sur FPGA comparables, dont une sur **la même puce**
-  (`xc7z020`) : `delhatch/Zedboard_Mandel` (9 moteurs @ 90 MHz → 12,8 images/s en
-  640×480, 220 DSP saturés), `shapoco/accelbrot` (paramétrable en nombre de cœurs),
-  `davemuscle/fpga_mandlebrot_fractal` (analyse de coût par « tranche »).
-- Arithmétique virgule fixe et seuil de fuite : littérature classique sur l'ensemble de
-  Mandelbrot ; le format et le seuil sont ici des génériques mesurés, pas des choix
-  recopiés.
+- Architecture of a real GPU (lanes, blocks, divergence): `tiny-gpu`
+  (github.com/adam-maj/tiny-gpu), FGPU, "An SIMT-Architecture for FPGAs" (ACM TRETS).
+- Comparable Mandelbrot implementations on FPGA, including one on **the same chip**
+  (`xc7z020`): `delhatch/Zedboard_Mandel` (9 engines @ 90 MHz → 12.8 images/s at
+  640×480, 220 DSPs saturated), `shapoco/accelbrot` (parameterizable in core count),
+  `davemuscle/fpga_mandlebrot_fractal` (cost analysis per "slice").
+- Fixed-point arithmetic and escape threshold: classic literature on the Mandelbrot
+  set; the format and the threshold here are measured generics, not choices
+  copied from somewhere.

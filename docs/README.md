@@ -1,50 +1,52 @@
 # Documentation — index
 
-Tout est en anglais, sauf indication contraire. Chaque affirmation technique sur
-Vivado/Vitis est sourcée (docs AMD) ou **mesurée** sur Vivado 2025.2 — les faits
-mesurés sont signalés comme tels, et ce qui n'a pas pu être vérifié est dit
-explicitement.
+Primary language: English. The reference material is being translated file by file:
+the files that are still French are marked as such in the table below. Every technical
+claim about Vivado/Vitis is either sourced (AMD docs) or **measured** on Vivado 2025.2 —
+measured facts are flagged as such, and anything that could not be verified is stated
+explicitly.
 
-| Fichier | Contenu | Statut de vérification |
-|---|---|---|
-| [`01-toolchain.md`](01-toolchain.md) | installation Linux, chemins, `settings64.sh`, licences, udev, outillage libre | outils détectés et versions réelles sur la machine de référence |
-| [`02-vivado-tcl.md`](02-vivado-tcl.md) | project mode / non-project mode, scripts complets, logs, pièges | flux exécuté jusqu'au **bitstream** (2025.2) |
-| [`03-simulation.md`](03-simulation.md) | XSim vs GHDL vs cocotb : commandes et limites | XSim et GHDL exécutés sur le même testbench, verdicts identiques |
-| [`04-cocotb-recipes.md`](04-cocotb-recipes.md) | recettes de testbench, scoreboard, modèles de référence | exécutées (cocotb 2.0.1 + GHDL 6.0.0) |
-| [`06-constraints-xdc.md`](06-constraints-xdc.md) | horloges, E/S, contraintes minimales | commandes vérifiées ; brochage dépendant du board |
-| [`07-timing-closure.md`](07-timing-closure.md) | lire WNS/TNS/WHS/THS, fermer le timing | rapports réels analysés |
-| [`08-vitis.md`](08-vitis.md) | Vitis classique (xsct) vs unifié (`vitis -s`), XSA, boot | `vitis -s`/`xsct` présents et testés en `--version` ; flux complet non exécuté (pas de carte Zynq) |
-| [`10-troubleshooting.md`](10-troubleshooting.md) | **catalogue d'erreurs réelles** avec correctif | messages copiés depuis Vivado 2025.2 |
-| [`11-agent-workflow.md`](11-agent-workflow.md) | comment un agent doit travailler (boucle, vérifications, rapports) | — |
-| `_research/` | notes de recherche brutes (sources AMD/cocotb/MCP), matière première | sources citées, non intégralement relues |
+| File | Content | Verification status | Language |
+|---|---|---|---|
+| [`01-toolchain.md`](01-toolchain.md) | Linux install, paths, `settings64.sh`, licences, udev, free toolchain | tools detected, real versions on the reference machine | FR (translation pending) |
+| [`02-vivado-tcl.md`](02-vivado-tcl.md) | project mode / non-project mode, complete scripts, logs, pitfalls | flow executed all the way to the **bitstream** (2025.2) | FR (translation pending) |
+| [`03-simulation.md`](03-simulation.md) | XSim vs GHDL vs cocotb: commands and limits | XSim and GHDL run on the same testbench, identical verdicts | FR (translation pending) |
+| [`04-cocotb-recipes.md`](04-cocotb-recipes.md) | testbench recipes, scoreboard, reference models | executed (cocotb 2.0.1 + GHDL 6.0.0) | FR (translation pending) |
+| [`06-constraints-xdc.md`](06-constraints-xdc.md) | clocks, I/O, minimal constraints | commands verified; pin assignment is board-dependent | FR (translation pending) |
+| [`07-timing-closure.md`](07-timing-closure.md) | reading WNS/TNS/WHS/THS, closing timing | real reports analysed | FR (translation pending) |
+| [`08-vitis.md`](08-vitis.md) | classic Vitis (xsct) vs unified (`vitis -s`), XSA, boot | `vitis -s`/`xsct` present and tested with `--version`; full flow not executed (no Zynq board) | FR (translation pending) |
+| [`10-troubleshooting.md`](10-troubleshooting.md) | **catalogue of real errors** with fixes | messages copied from Vivado 2025.2 | FR (translation pending) |
+| [`11-agent-workflow.md`](11-agent-workflow.md) | how an agent must work (loop, checks, reports) | — | FR (translation pending) |
+| `_research/` | raw research notes (AMD/cocotb/MCP sources), raw material | sources cited, not fully re-read line by line | EN (this file's own `README.md` is still FR) |
 
-Deux autres ensembles de documents :
+Two other sets of documents:
 
-- `../AGENTS.md` : contrat pour un agent qui travaille **dans ce dépôt**.
-- `../mcp/README.md` : le serveur MCP (outils, sécurité, configuration client).
+- `../AGENTS.md`: contract for an agent working **in this repository**.
+- `../mcp/README.md`: the MCP server (tools, security, client configuration); it has a
+  French mirror at `../mcp/README.fr.md`.
 
-## Ce qui est prouvé, et comment
+## What is proven, and how
 
-Le tout se rejoue en une commande :
+The whole thing replays with a single command:
 ```bash
-bash scripts/verify_all.sh    # 11 vérifications : exemples, templates, MCP, Tcl,
-                              # et (si Vivado est dans le PATH) une synthèse réelle
-                              # dont les rapports sont ensuite analysés
+bash scripts/verify_all.sh    # 11 checks: examples, templates, MCP, Tcl,
+                              # and (if Vivado is in PATH) a real synthesis
+                              # whose reports are then analysed
 ```
-Le script n'affiche `OK` que sur un code retour nul, et `IGNORE` (jamais `OK`) pour
-ce qu'il n'a pas pu exécuter.
+The script prints `OK` only on a null exit code, and `IGNORE` (never `OK`) for
+whatever it could not execute.
 
-| Affirmation | Preuve |
+| Claim | Evidence |
 |---|---|
-| Le flux Vivado complet marche | `top.bit` de 4 Mo généré, `STATUS=write_bitstream Complete!`, WNS 7.317 ns |
-| Les scripts Tcl sont valides | `tclsh … check_tcl_syntax.tcl` (8/8) + `scripts/check_tcl.py` (procédures exécutées) |
-| Les testbenches passent | `make` sur les exemples : `tests/test_reports.py` et sorties citées |
-| Le serveur MCP pilote un vrai Vivado | synthèse réelle via `vivado_run` (rc=0, 28,6 s), `job_log`, `report_summary` |
-| Les analyseurs de rapports sont justes | fixtures **authentiques** dans `mcp/tests/fixtures/` (Vivado 2025.2) |
+| The full Vivado flow works | `top.bit` 4 MB generated, `STATUS=write_bitstream Complete!`, WNS 7.317 ns |
+| The Tcl scripts are valid | `tclsh … check_tcl_syntax.tcl` (8/8) + `scripts/check_tcl.py` (procedures actually executed) |
+| The testbenches pass | `make` on the examples: `tests/test_reports.py` and quoted outputs |
+| The MCP server drives a real Vivado | real synthesis through `vivado_run` (rc=0, 28.6 s), `job_log`, `report_summary` |
+| The report analysers are correct | **authentic** fixtures in `mcp/tests/fixtures/` (Vivado 2025.2) |
 
-## Ce qui n'est pas prouvé
+## What is not proven
 
-- La **programmation JTAG** (`program_hw_devices`) : aucune carte branchée.
-- Le flux **Vitis complet** (plateforme + application + boot) : pas de cible Zynq.
-- Un **timing en violation** (WNS < 0) : seule une fixture synthétique le couvre.
-- Les **gros composants** (UltraScale+, Versal) : aucune licence de ce type ici.
+- **JTAG programming** (`program_hw_devices`): no board attached.
+- The **full Vitis flow** (platform + application + boot): no Zynq target.
+- A **timing-violating** design (WNS < 0): only a synthetic fixture covers it.
+- **Large devices** (UltraScale+, Versal): no licence of that kind here.
