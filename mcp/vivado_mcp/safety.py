@@ -7,6 +7,12 @@ fiable. Trois règles, appliquées partout :
 2. Aucun binaire hors liste blanche, et JAMAIS de shell=True.
 3. Toute saisie Tcl/texte écrite par le LLM est déposée dans un fichier
    temporaire du projet, jamais interpolée dans une ligne de commande.
+
+PORTÉE EXACTE, à ne pas surestimer : ces règles confinent les OUTILS DE FICHIERS et
+la liste des binaires. Elles ne rendent pas le serveur étanche : le Tcl soumis à
+`vivado_run`/`vitis_run` est un langage complet (`exec` inclus), et `cocotb_run`
+exécute le `make` du dossier de testbench — donc le Makefile que l'agent vient
+d'écrire. Voir « What this does NOT protect against » dans `mcp/README.md`.
 """
 
 from __future__ import annotations
