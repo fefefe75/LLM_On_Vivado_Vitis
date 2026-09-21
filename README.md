@@ -126,6 +126,30 @@ stops at `--to implementation` (real post-route timing, no bitstream); the GIF i
 module written is this repository's own counter — the smallest design whose timing
 report means anything.
 
+### And the hardware itself: what the mini-GPU renders (example 07)
+
+![12-frame Mandelbrot zoom, every image computed by the mini-GPU in VHDL](examples/07-mini-gpu-mandelbrot/doc/mandelbrot_zoom.gif)
+
+Not a software render either. Each image of that zoom comes out of the SIMT accelerator
+described in [`examples/07-mini-gpu-mandelbrot`](examples/07-mini-gpu-mandelbrot/README.md)
+— 16 lanes in VHDL, one elaboration per image because the complex-plane window *is* a
+generic — and every image is compared pixel by pixel with the Python reference model
+before being written, so a wrong one fails the run instead of shipping a pretty lie.
+
+| Property | Value of that run |
+|---|---|
+| Images / resolution | 12 × (128×96), enlarged ×8 nearest-neighbour: nothing interpolated |
+| Zoom | ×0.72 per image → 39×, centred on the "seahorse valley" |
+| Verification | **12 / 12 `PASS`** (exact equality with the reference model) |
+| Cost | 68 s to 245 s per image, ~40 min total, **one core** |
+
+That last line is the honest part of the GPU story: **GHDL is single-threaded**, so one
+simulation occupies one core whatever `C_LANES` is — the lanes are executed cycle by cycle
+inside the simulator and only become throughput in silicon. The parallelism that does
+exist is between images, hence `render_zoom.py --jobs 6` (measured ×2.4 on 4 images, with
+byte-identical PNGs). The same design's measured throughput against a CPU is in §4 of that
+example's README — and the CPU wins there, which is also worth reading.
+
 ## Version
 
 Primary language: English, with French mirrors kept alongside (`README.fr.md`,

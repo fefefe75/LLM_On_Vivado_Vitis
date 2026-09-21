@@ -134,6 +134,30 @@ MCP : cocotb `TESTS=3 PASS=3 FAIL=0`, puis
 **WNS = 7.915 ns** relu par `report_summary`. Le workspace est un dossier temporaire,
 jamais ce dépôt ; le pilote (`docs/demo/agent_loop_demo.py`) est versionné tel quel.
 
+### Et le matériel lui-même : ce que rend le mini-GPU (exemple 07)
+
+![Zoom de Mandelbrot en 12 images, toutes calculées par le mini-GPU en VHDL](examples/07-mini-gpu-mandelbrot/doc/mandelbrot_zoom.gif)
+
+Pas un rendu logiciel non plus. Chaque image de ce zoom sort de l'accélérateur SIMT décrit
+dans [`examples/07-mini-gpu-mandelbrot`](examples/07-mini-gpu-mandelbrot/README.md) — 16
+voies en VHDL, une élaboration par image puisque la fenêtre du plan complexe *est* un
+générique — et chacune est comparée pixel par pixel au modèle de référence Python avant
+d'être écrite : une image fausse ferait échouer le run au lieu de livrer un joli mensonge.
+
+| Propriété | Valeur de ce run |
+|---|---|
+| Images / résolution | 12 × (128×96), agrandies ×8 au plus proche voisin : rien n'est interpolé |
+| Zoom | ×0,72 par image → 39×, centré sur la « seahorse valley » |
+| Vérification | **12 / 12 `PASS`** (égalité exacte avec le modèle de référence) |
+| Coût | 68 s à 245 s par image, ~40 min au total, **un seul cœur** |
+
+Cette dernière ligne est la partie honnête de l'histoire GPU : **GHDL est mono-thread**,
+donc une simulation occupe un cœur quel que soit `C_LANES` — les voies sont exécutées cycle
+par cycle dans le simulateur et ne deviennent du débit qu'en silicium. Le parallélisme qui
+existe vraiment est *entre les images*, d'où `render_zoom.py --jobs 6` (mesuré ×2,4 sur 4
+images, PNG identiques octet pour octet). Le débit mesuré du même design face à un CPU est
+en §4 du README de cet exemple — et le CPU gagne, ce qui se lit aussi.
+
 ## Politique de vérification de ce dépôt
 
 Chaque affirmation non triviale est soit **mesurée**, soit explicitement signalée
