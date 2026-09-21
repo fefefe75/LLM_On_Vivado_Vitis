@@ -86,9 +86,48 @@ tolerance. And the test reads the complex-plane window and the Q format **from t
 configuration ports**: it therefore verifies the arithmetic of the RTL, not a constant
 copied by hand.
 
-![image computed by the RTL](tb/images/mandelbrot_petite.png)
+![image computed by the RTL](doc/mandelbrot_rtl.png)
 
-*(96×64 image obtained in simulation, written by the testbench — see §6)*
+*(96×64 image obtained in simulation and written by the testbench into `tb/images/`
+(a copy is committed here as `doc/mandelbrot_rtl.png`, otherwise this link would be
+dead on a fresh clone: those folders are generated and gitignored) — see §6)*
+
+### Zoom: 12 images computed by the RTL
+
+![12-frame Mandelbrot zoom, every image computed by the mini-GPU](doc/mandelbrot_zoom.gif)
+
+Nothing here is a software render: each image of that zoom comes out of the same VHDL
+design — one elaboration per image, because the complex-plane window *is* a generic
+(`C_X0/C_Y0/C_DX/C_DY`) — and each one is compared pixel by pixel with the Python
+reference model before being written. A wrong frame fails the run instead of producing
+a pretty lie.
+
+| Property | Value of that run |
+|---|---|
+| Images / resolution | 12 × (128×96), enlarged ×8 with nearest-neighbour: nothing interpolated |
+| Design point | 16 lanes, `max_iter=96`, Q26 |
+| Zoom | ×0.72 per image → 39× total, centred on the "seahorse valley" |
+| Verification | 12 / 12 `PASS` (exact equality against the reference model) |
+| Cost | 68 s to 245 s per image, ~40 min total, **one core** (see below) |
+| Committed copy | `doc/mandelbrot_zoom.gif`; the frames themselves are regenerable and never committed (`tb/images_*/` is gitignored) |
+
+```bash
+cd tb
+python3 render_zoom.py --frames 12 --out /tmp/zoom --width 128 --height 96 \
+    --lanes 16 --max-iter 96 --facteur 0.72 --jobs 6
+python3 zoom_gif.py /tmp/zoom /tmp/mandelbrot_zoom.gif --scale 8
+```
+
+Two things worth knowing while you time it:
+
+- **GHDL is single-threaded.** One simulation occupies one core, whatever `C_LANES`
+  is: the lanes are executed cycle by cycle inside the simulator, they only become
+  throughput in silicon. The parallelism that *is* available sits between images, so
+  `render_zoom.py --jobs N` runs N images concurrently (measured: 63.8 s vs 27.0 s on
+  4 images, ×2.4, with byte-identical PNGs — each task has its own copy of the
+  testbench, `sim_build` and `results.xml`).
+- At the deepest images one pixel covers ~6·10⁻⁴ of the plane, so the visible blocks
+  are the 128×96 raster of the RTL itself, not an artefact of the GIF.
 
 ## 4. Measured throughput (not hoped-for)
 

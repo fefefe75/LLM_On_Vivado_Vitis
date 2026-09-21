@@ -84,9 +84,48 @@ tolérance. Et le test lit la fenêtre du plan complexe et le format Q **sur les
 configuration du design** : il vérifie donc l'arithmétique du RTL, pas une constante
 recopiée à la main.
 
-![image calculée par le RTL](tb/images/mandelbrot_petite.png)
+![image calculée par le RTL](doc/mandelbrot_rtl.png)
 
-*(image 96×64 obtenue en simulation, écrite par le banc de test — voir §6)*
+*(image 96×64 obtenue en simulation et écrite par le banc de test dans `tb/images/`
+(une copie est committée ici sous `doc/mandelbrot_rtl.png`, sinon ce lien serait mort
+sur un clone neuf : ces dossiers sont générés et gitignorés) — voir §6)*
+
+### Zoom : 12 images calculées par le RTL
+
+![Zoom de Mandelbrot en 12 images, toutes calculées par le mini-GPU](doc/mandelbrot_zoom.gif)
+
+Rien n'est un rendu logiciel : chaque image de ce zoom sort du **même design VHDL** —
+une élaboration par image, puisque la fenêtre du plan complexe *est* un générique
+(`C_X0/C_Y0/C_DX/C_DY`) — et chacune est comparée pixel par pixel au modèle de référence
+Python avant d'être écrite. Une image fausse ferait échouer le run au lieu de produire
+un joli mensonge.
+
+| Propriété | Valeur de ce run |
+|---|---|
+| Images / résolution | 12 × (128×96), agrandies ×8 au plus proche voisin : rien n'est interpolé |
+| Point de conception | 16 voies, `max_iter=96`, Q26 |
+| Zoom | ×0,72 par image → 39× au total, centré sur la « seahorse valley » |
+| Vérification | 12 / 12 `PASS` (égalité exacte avec le modèle de référence) |
+| Coût | 68 s à 245 s par image, ~40 min au total, **un seul cœur** (voir ci-dessous) |
+| Copie committée | `doc/mandelbrot_zoom.gif` ; les images elles-mêmes sont régénérables et jamais committées (`tb/images_*/` est gitignoré) |
+
+```bash
+cd tb
+python3 render_zoom.py --frames 12 --out /tmp/zoom --width 128 --height 96 \
+    --lanes 16 --max-iter 96 --facteur 0.72 --jobs 6
+python3 zoom_gif.py /tmp/zoom /tmp/mandelbrot_zoom.gif --scale 8
+```
+
+Deux choses à savoir avant de chronométrer :
+
+- **GHDL est mono-thread.** Une simulation occupe un cœur, quel que soit `C_LANES` :
+  les voies sont exécutées cycle par cycle dans le simulateur, elles ne deviennent du
+  débit qu'en silicium. Le parallélisme disponible est donc *entre les images* :
+  `render_zoom.py --jobs N` en calcule N en parallèle (mesuré : 63,8 s contre 27,0 s
+  sur 4 images, ×2,4, avec des PNG identiques octet pour octet — chaque tâche a sa
+  propre copie du banc, son `sim_build` et son `results.xml`).
+- Dans les images les plus profondes, un pixel couvre ~6·10⁻⁴ du plan : les blocs
+  visibles sont donc la trame 128×96 du RTL lui-même, pas un artefact du GIF.
 
 ## 4. Débit mesuré (et non espéré)
 
